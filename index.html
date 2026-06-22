@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Дыхание</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-gradient: radial-gradient(circle at 50% 40%, #121212 0%, #050505 100%);
+            --text: #e0e0e0;
+            --text-secondary: #5a5a5a;
+            --text-muted: #4a4a4a;
+            --text-dim: #6a6a6a;
+            --panel-bg: rgba(12, 12, 12, 0.8);
+            --panel-border: #262626;
+            --btn-border: #3a3a3a;
+            --btn-text: #cccccc;
+            --accent: #b39ddb;
+            --accent-dim: #7b6fa0;
+            --accent-glow: rgba(179, 157, 219, 0.6);
+            --accent-hold: #c9a87e;
+            --accent-hold-glow: rgba(201, 168, 126, 0.6);
+            --circle-bg: #151515;
+            --footer-text: #3a3a3a;
+            --footer-link: #6a6a6a;
+            --footer-link-hover: #c0c0c0;
+            --footer-border: #181818;
+            --number-color: #d4d4d4;
+            --label-color: #6a6a6a;
+            --sidebar-border: #1a1a1a;
+            --toggle-track: #3a3a3a;
+            /* Цвета техник */
+            --color-relax: #b39ddb;
+            --color-relax-glow: rgba(179, 157, 219, 0.6);
+            --color-relax-bg: rgba(179, 157, 219, 0.2);
+            --color-focus: #4db6ac;
+            --color-focus-glow: rgba(77, 182, 172, 0.6);
+            --color-focus-bg: rgba(77, 182, 172, 0.2);
+            --color-calm: #64b5f6;
+            --color-calm-glow: rgba(100, 181, 246, 0.6);
+            --color-calm-bg: rgba(100, 181, 246, 0.2);
+            --color-wimhof: #e8734a;
+            --color-wimhof-glow: rgba(232, 115, 74, 0.6);
+            --color-wimhof-bg: rgba(232, 115, 74, 0.2);
+        }
+
+        .light-theme {
+            --bg: #f5f5f5;
+            --bg-gradient: radial-gradient(circle at 50% 40%, #e8e8e8 0%, #f5f5f5 100%);
+            --text: #1a1a1a;
+            --text-secondary: #777;
+            --text-muted: #888;
+            --text-dim: #555;
+            --panel-bg: rgba(255, 255, 255, 0.8);
+            --panel-border: #ddd;
+            --btn-border: #ccc;
+            --btn-text: #555;
+            --accent: #9575cd;
+            --accent-dim: #6a4f9c;
+            --accent-glow: rgba(149, 117, 205, 0.5);
+            --accent-hold: #b8946e;
+            --accent-hold-glow: rgba(184, 148, 110, 0.5);
+            --circle-bg: #e8e8e8;
+            --footer-text: #888;
+            --footer-link: #777;
+            --footer-link-hover: #1a1a1a;
+            --footer-border: #e0e0e0;
+            --number-color: #1a1a1a;
+            --label-color: #777;
+            --sidebar-border: #e0e0e0;
+            --toggle-track: #ddd;
+            --color-relax: #9575cd;
+            --color-relax-glow: rgba(149, 117, 205, 0.5);
+            --color-relax-bg: rgba(149, 117, 205, 0.15);
+            --color-focus: #378b82;
+            --color-focus-glow: rgba(55, 139, 130, 0.5);
+            --color-focus-bg: rgba(55, 139, 130, 0.15);
+            --color-calm: #4d8fc5;
+            --color-calm-glow: rgba(77, 143, 197, 0.5);
+            --color-calm-bg: rgba(77, 143, 197, 0.15);
+            --color-wimhof: #d4653a;
+            --color-wimhof-glow: rgba(212, 101, 58, 0.5);
+            --color-wimhof-bg: rgba(212, 101, 58, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; background: var(--bg); transition: background 0.5s ease; }
+        body {
+            font-family: 'Inter', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: space-between; min-height: 100vh;
+            margin: 0; padding: 1.5rem; padding-bottom: 0;
+            color: var(--text); letter-spacing: -0.01em;
+            background: var(--bg-gradient);
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        .sidebar-toggle {
+            position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+            width: 8px; height: 48px; background: var(--sidebar-border);
+            border: none; border-radius: 0 4px 4px 0;
+            cursor: pointer; z-index: 25; transition: all 0.3s ease; opacity: 0.5;
+        }
+        .sidebar-toggle:hover { opacity: 1; width: 10px; background: var(--footer-link); }
+        .sidebar-toggle.active { opacity: 0; pointer-events: none; }
+        .sidebar {
+            position: fixed; left: -120px; top: 0; bottom: 0;
+            width: 120px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 1.5rem 0.5rem; gap: 2rem;
+            border-right: 1px solid var(--sidebar-border);
+            z-index: 20; background: var(--bg);
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; justify-content: center; }
+        .sidebar-dots { display: flex; gap: 5px; opacity: 0.3; margin-top: auto; margin-bottom: 1rem; }
+        .sidebar-dots span { width: 3px; height: 3px; border-radius: 50%; background: var(--text-muted); }
+        .sidebar-label { font-size: 0.55rem; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: -1.2rem; }
+        .toggle-track { width: 52px; height: 28px; background: var(--toggle-track); border-radius: 14px; cursor: pointer; position: relative; transition: background 0.3s ease; display: flex; align-items: center; }
+        .toggle-thumb { position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; left: 3px; top: 3px; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; }
+        .light-theme .toggle-thumb { transform: translateX(24px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+        .page-content { flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding-bottom: 2rem; }
+        .container { width: 100%; max-width: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 3rem; }
+
+        .technique-selector {
+            display: flex; gap: 0.35rem;
+            background: rgba(255,255,255,0.03); border-radius: 3rem; padding: 0.35rem;
+            border: 1px solid var(--panel-border); width: 100%;
+        }
+        .technique-btn {
+            flex: 1; padding: 0.6rem 0.5rem; border-radius: 2.5rem; border: none;
+            background: transparent; color: var(--text-dim);
+            font-family: inherit; font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 0.04em; cursor: pointer;
+            transition: all 0.3s ease; white-space: nowrap;
+            display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.2;
+        }
+        .technique-btn .tech-name { font-weight: 600; font-size: 0.72rem; }
+        .technique-btn .tech-pattern { font-size: 0.55rem; opacity: 0.6; letter-spacing: 0.06em; }
+        .technique-btn.active .tech-pattern { opacity: 0.9; }
+        .technique-btn:hover:not(.active) { color: #aaa; }
+        /* Цвета кнопок по техникам */
+        .technique-btn[data-technique="relax"].active { background: var(--color-relax-bg); color: var(--color-relax); }
+        .technique-btn[data-technique="focus"].active { background: var(--color-focus-bg); color: var(--color-focus); }
+        .technique-btn[data-technique="calm"].active { background: var(--color-calm-bg); color: var(--color-calm); }
+        .technique-btn[data-technique="wimhof"].active { background: var(--color-wimhof-bg); color: var(--color-wimhof); }
+
+        .breath-circle-container {
+            position: relative; width: 280px; height: 280px; margin: 0 auto;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+        }
+        .breath-glow {
+            position: absolute; top: 50%; left: 50%;
+            width: 240px; height: 240px; border-radius: 50%;
+            background: var(--accent); filter: blur(50px);
+            opacity: 0; transform: translate(-50%, -50%);
+            transition: background 0.5s ease; pointer-events: none; z-index: 1;
+        }
+        .breath-glow.hold-color { background: var(--accent-hold); }
+        .breath-circle {
+            position: relative; width: 100%; height: 100%; border-radius: 50%;
+            background: var(--circle-bg);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
+        }
+        .breath-ring {
+            position: absolute; inset: 0; border-radius: 50%;
+            pointer-events: none; z-index: 3;
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
+        }
+        .breath-circle-inner {
+            position: relative; z-index: 4;
+            display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+            pointer-events: none;
+        }
+        .breath-timer {
+            font-size: 4rem; font-weight: 350; letter-spacing: -0.02em;
+            color: var(--number-color); line-height: 1;
+            font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
+            font-family: 'Inter', 'SF Mono', 'JetBrains Mono', monospace; order: 1;
+        }
+        .breath-phase {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.35em;
+            color: var(--label-color); font-weight: 500; transition: color 0.3s ease; order: 2;
+        }
+        .breath-cycle {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em;
+            color: var(--text-muted);
+            font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
+            font-family: 'Inter', 'SF Mono', 'JetBrains Mono', monospace; order: 3;
+        }
+        .breath-hint {
+            font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.25em;
+            color: var(--text-muted); opacity: 0.5; order: 4;
+        }
+        .instruction {
+            font-size: 0.8rem; color: var(--text-muted);
+            letter-spacing: 0.04em; line-height: 1.8; max-width: 500px; opacity: 0.7;
+        }
+        .instruction .tech-title { font-weight: 600; display: block; margin-bottom: 6px; font-size: 0.85rem; }
+        .instruction .tech-title.relax-color { color: var(--color-relax); }
+        .instruction .tech-title.focus-color { color: var(--color-focus); }
+        .instruction .tech-title.calm-color { color: var(--color-calm); }
+        .instruction .tech-title.wimhof-color { color: var(--color-wimhof); }
+
+        .footer {
+            flex-shrink: 0; width: 100%; display: flex; flex-direction: column;
+            align-items: center; gap: 0.7rem; color: var(--footer-text);
+            font-size: 0.7rem; letter-spacing: 0.15em;
+            padding: 1.8rem 1rem 1.2rem; background: transparent;
+            border-top: 1px solid var(--footer-border); margin-top: auto;
+            transition: color 0.5s ease, border-color 0.5s ease;
+        }
+        .footer .links { display: flex; gap: 2.2rem; flex-wrap: nowrap; justify-content: center; white-space: nowrap; }
+        .footer a { color: var(--footer-link); text-decoration: none; transition: color 0.25s; border-bottom: 1px solid transparent; padding-bottom: 2px; }
+        .footer a:hover { color: var(--footer-link-hover); border-bottom-color: #444; }
+        .footer .year { color: var(--footer-text); margin-top: 0.1rem; transition: color 0.5s ease; }
+
+        @media (max-width: 600px) {
+            body { padding: 0.8rem; padding-bottom: 0; }
+            .container { gap: 2.5rem; }
+            .breath-circle-container { width: 240px; height: 240px; }
+            .breath-timer { font-size: 3.2rem; }
+            .breath-glow { width: 200px; height: 200px; filter: blur(40px); }
+            .instruction { font-size: 0.72rem; max-width: 100%; }
+            .instruction .tech-title { font-size: 0.78rem; }
+            .technique-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
+            .technique-btn { padding: 0.5rem 0.6rem; }
+            .technique-btn .tech-name { font-size: 0.62rem; }
+            .technique-btn .tech-pattern { font-size: 0.48rem; }
+            .footer .links { gap: 1.2rem; font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+    <button class="sidebar-toggle" id="sidebarToggle" title="Меню"></button>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-label">Тема</div>
+        <div class="sidebar-row">
+            <div class="toggle-track" id="themeToggle">
+                <div class="toggle-thumb"><span id="toggleIcon">🌙</span></div>
+            </div>
+        </div>
+        <div class="sidebar-dots"><span></span><span></span><span></span></div>
+    </div>
+
+    <div class="page-content">
+        <div class="container">
+            <div class="technique-selector" id="techniqueSelector">
+                <button class="technique-btn active" data-technique="relax">
+                    <span class="tech-name">Расслабление</span><span class="tech-pattern">4-7-8</span>
+                </button>
+                <button class="technique-btn" data-technique="focus">
+                    <span class="tech-name">Концентрация</span><span class="tech-pattern">4×4</span>
+                </button>
+                <button class="technique-btn" data-technique="calm">
+                    <span class="tech-name">Успокоение</span><span class="tech-pattern">2-2-8</span>
+                </button>
+                <button class="technique-btn" data-technique="wimhof">
+                    <span class="tech-name">Бодрость</span><span class="tech-pattern">Вим Хоф</span>
+                </button>
+            </div>
+
+            <div class="breath-circle-container" id="breathCircleContainer">
+                <div class="breath-glow" id="breathGlow"></div>
+                <div class="breath-circle" id="breathCircle">
+                    <div class="breath-ring" id="breathRing"></div>
+                    <div class="breath-circle-inner">
+                        <div class="breath-timer" id="breathTimer">4</div>
+                        <div class="breath-phase" id="breathPhase">Вдох</div>
+                        <div class="breath-cycle" id="breathCycle">Цикл 0</div>
+                        <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instruction" id="instruction">
+                <span class="tech-title relax-color">Расслабление</span>
+                Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="links">
+            <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://t.me/idendie" target="_blank" rel="noopener">t.me/idendie</a>
+            <a href="mailto:idenbraun@yandex.ru">idenbraun@yandex.ru</a>
+        </div>
+        <div class="year">© 2026</div>
+    </div>
+
+    <script>
+        (function() {
+            const SCALE_MIN = 0.88;
+            const SCALE_MAX = 1.12;
+            const SCALE_BASE = 1.0;
+            const WH_HOLD_SHRINK = 6;
+            const WH_HOLD_EXPAND = 12;
+            const WH_INHALE_FILL = 3;
+
+            // Карта цветов для техник
+            const TECH_COLORS = {
+                relax: { main: 'var(--color-relax)', glow: 'var(--color-relax-glow)', titleClass: 'relax-color' },
+                focus: { main: 'var(--color-focus)', glow: 'var(--color-focus-glow)', titleClass: 'focus-color' },
+                calm:  { main: 'var(--color-calm)',  glow: 'var(--color-calm-glow)',  titleClass: 'calm-color' },
+                wimhof:{ main: 'var(--color-wimhof)',glow: 'var(--color-wimhof-glow)',titleClass: 'wimhof-color' }
+            };
+
+            const TECHNIQUES = {
+                relax: {
+                    title: 'Расслабление',
+                    instruction: 'Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну',
+                    expandDuration: 4, holdDuration: 7, contractDuration: 8,
+                    phases: [
+                        { name: 'Вдох', duration: 4, isHold: false, fillDir: 'up' },
+                        { name: 'Задержка', duration: 7, isHold: true, fillDir: 'hold' },
+                        { name: 'Выдох', duration: 8, isHold: false, fillDir: 'down' }
+                    ]
+                },
+                focus: {
+                    title: 'Концентрация',
+                    instruction: 'Вдох 4с, задержка 4с, выдох 4с, задержка 4с<br>Для фокуса и ментальной ясности',
+                    expandDuration: 4, holdDuration: 4, contractDuration: 8,
+                    phases: [
+                        { name: 'Вдох', duration: 4, isHold: false, fillDir: 'up' },
+                        { name: 'Задержка', duration: 4, isHold: true, fillDir: 'hold' },
+                        { name: 'Выдох', duration: 4, isHold: false, fillDir: 'down' },
+                        { name: 'Задержка', duration: 4, isHold: true, fillDir: 'hold' }
+                    ]
+                },
+                calm: {
+                    title: 'Успокоение',
+                    instruction: 'Два коротких вдоха через нос, длинный выдох через рот<br>Для быстрого снятия стресса и тревоги',
+                    expandDuration: 4, holdDuration: 0, contractDuration: 8,
+                    phases: [
+                        { name: 'Вдох', duration: 2, isHold: false, fillDir: 'up' },
+                        { name: 'Довдох', duration: 2, isHold: false, fillDir: 'up' },
+                        { name: 'Выдох', duration: 8, isHold: false, fillDir: 'down' }
+                    ]
+                },
+                wimhof: {
+                    title: 'Бодрость',
+                    instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с, вдох и задержка 15с<br>Для бодрости и прилива энергии',
+                    isWimHof: true,
+                    activeCycles: 30, cycleDuration: 3,
+                    phases: [
+                        { name: 'Активное дыхание', duration: 90, isHold: false, fillDir: 'up', wimhofPhase: 'active' },
+                        { name: 'Задержка', duration: 60, isHold: true, fillDir: 'hold', wimhofPhase: 'hold' },
+                        { name: 'Вдох-задержка', duration: 15, isHold: true, fillDir: 'hold', wimhofPhase: 'inhaleHold' }
+                    ]
+                }
+            };
+
+            let currentTechnique = 'relax';
+            let isPlaying = false;
+            let phaseIndex = 0;
+            let timeInPhase = 0;
+            let sessionCycles = 0;
+            let wimhofActiveCount = 0, wimhofLastToggle = 0, wimhofIsInhale = true;
+            let animationId = null;
+            let lastTimestamp = 0;
+
+            const breathCircleContainer = document.getElementById('breathCircleContainer');
+            const breathCircle = document.getElementById('breathCircle');
+            const breathRing = document.getElementById('breathRing');
+            const breathGlow = document.getElementById('breathGlow');
+            const breathPhase = document.getElementById('breathPhase');
+            const breathTimer = document.getElementById('breathTimer');
+            const breathCycle = document.getElementById('breathCycle');
+            const breathHint = document.getElementById('breathHint');
+            const instruction = document.getElementById('instruction');
+            const techniqueBtns = document.querySelectorAll('.technique-btn');
+
+            function getTechnique() { return TECHNIQUES[currentTechnique]; }
+            function getCurrentPhase() { return getTechnique().phases[phaseIndex]; }
+            function isWimHof() { return getTechnique().isWimHof; }
+            function getTechColor() { return TECH_COLORS[currentTechnique]; }
+
+            function getElapsedInCycle() {
+                const tech = getTechnique();
+                let elapsed = 0;
+                for (let i = 0; i < phaseIndex; i++) elapsed += tech.phases[i].duration;
+                elapsed += timeInPhase;
+                return elapsed;
+            }
+
+            function getCircleScale() {
+                const tech = getTechnique();
+                if (!tech.isWimHof) {
+                    const elapsed = getElapsedInCycle();
+                    if (elapsed <= tech.expandDuration) return SCALE_BASE + (elapsed / tech.expandDuration) * (SCALE_MAX - SCALE_BASE);
+                    else if (elapsed <= tech.expandDuration + tech.holdDuration) return SCALE_MAX;
+                    else {
+                        const elapsedAfterHold = elapsed - tech.expandDuration - tech.holdDuration;
+                        return SCALE_MAX - Math.min(1, elapsedAfterHold / tech.contractDuration) * (SCALE_MAX - SCALE_BASE);
+                    }
+                }
+                const phase = getCurrentPhase();
+                if (phase.wimhofPhase === 'active') {
+                    const halfCycle = tech.cycleDuration / 2;
+                    const timeInToggle = timeInPhase - wimhofLastToggle;
+                    const progress = Math.min(1, timeInToggle / halfCycle);
+                    return wimhofIsInhale ? SCALE_BASE + progress * (SCALE_MAX - SCALE_BASE) : SCALE_MAX - progress * (SCALE_MAX - SCALE_BASE);
+                } else if (phase.wimhofPhase === 'hold') {
+                    const holdDuration = phase.duration;
+                    const expandStart = holdDuration - WH_HOLD_EXPAND;
+                    if (timeInPhase <= WH_HOLD_SHRINK) {
+                        const progress = timeInPhase / WH_HOLD_SHRINK;
+                        return SCALE_BASE - progress * (SCALE_BASE - SCALE_MIN);
+                    } else if (timeInPhase <= expandStart) {
+                        return SCALE_MIN;
+                    } else {
+                        const elapsedExpand = timeInPhase - expandStart;
+                        const progress = Math.min(1, elapsedExpand / WH_HOLD_EXPAND);
+                        return SCALE_MIN + progress * (SCALE_MAX - SCALE_MIN);
+                    }
+                } else {
+                    return SCALE_MAX;
+                }
+            }
+
+            function drawRing(progress, fillDir, isHold, wimhofOverride) {
+                const color = getTechColor().main;
+                const holdColor = 'var(--accent-hold)';
+                const ringColor = isHold ? holdColor : color;
+
+                if (wimhofOverride === 'active') {
+                    const angle = progress * 360;
+                    if (wimhofIsInhale) {
+                        const half = angle / 2;
+                        breathRing.style.background = `conic-gradient(from 0deg, transparent ${180 - half}deg, ${color} ${180 - half}deg, ${color} ${180 + half}deg, transparent ${180 + half}deg)`;
+                    } else {
+                        const gap = angle / 2;
+                        breathRing.style.background = `conic-gradient(from 0deg, transparent ${gap}deg, ${color} ${gap}deg, ${color} ${360 - gap}deg, transparent ${360 - gap}deg)`;
+                    }
+                    return;
+                }
+                if (wimhofOverride === 'hold') {
+                    const angle = progress * 360;
+                    const half = angle / 2;
+                    breathRing.style.background = `conic-gradient(from 0deg, transparent ${180 - half}deg, ${color} ${180 - half}deg, ${color} ${180 + half}deg, transparent ${180 + half}deg)`;
+                    return;
+                }
+                if (wimhofOverride === 'inhaleHold') {
+                    if (progress >= 1) {
+                        breathRing.style.background = `conic-gradient(${color} 0deg, ${color} 360deg)`;
+                    } else {
+                        const angle = Math.min(progress * 360, 360);
+                        const half = angle / 2;
+                        breathRing.style.background = `conic-gradient(from 0deg, transparent ${180 - half}deg, ${color} ${180 - half}deg, ${color} ${180 + half}deg, transparent ${180 + half}deg)`;
+                    }
+                    return;
+                }
+                if (fillDir === 'hold' || isHold) { breathRing.style.background = `conic-gradient(${ringColor} 0deg, ${ringColor} 360deg)`; return; }
+                const angle = progress * 360;
+                if (fillDir === 'up') {
+                    const half = angle / 2;
+                    breathRing.style.background = `conic-gradient(from 0deg, transparent ${180 - half}deg, ${color} ${180 - half}deg, ${color} ${180 + half}deg, transparent ${180 + half}deg)`;
+                } else {
+                    const gap = angle / 2;
+                    breathRing.style.background = `conic-gradient(from 0deg, transparent ${gap}deg, ${color} ${gap}deg, ${color} ${360 - gap}deg, transparent ${360 - gap}deg)`;
+                }
+            }
+
+            function updateGlow(progress, isHold, isWimhofActive) {
+                breathGlow.classList.remove('hold-color');
+                if (isHold) {
+                    breathGlow.style.background = 'var(--accent-hold)';
+                    breathGlow.classList.add('hold-color');
+                } else {
+                    breathGlow.style.background = getTechColor().glow;
+                }
+                if (isWimHof()) {
+                    const pulse = 0.4 + Math.sin(Date.now() / 1000 * 2) * 0.2;
+                    breathGlow.style.opacity = pulse.toFixed(3);
+                } else {
+                    const intensity = 1 - Math.pow(2 * progress - 1, 2);
+                    breathGlow.style.opacity = (0.1 + intensity * 0.55).toFixed(3);
+                }
+            }
+
+            function updateDisplay() {
+                const tech = getTechnique();
+                const phase = getCurrentPhase();
+                let displayTimer, displayPhase, progress, wimhofOverride;
+
+                if (isPlaying) {
+                    if (tech.isWimHof && phase.wimhofPhase === 'active') {
+                        displayTimer = wimhofActiveCount + '/' + tech.activeCycles;
+                        displayPhase = wimhofIsInhale ? 'Вдох' : 'Выдох';
+                        const halfCycle = tech.cycleDuration / 2;
+                        progress = Math.min(1, (timeInPhase - wimhofLastToggle) / halfCycle);
+                        wimhofOverride = 'active';
+                    } else if (tech.isWimHof && phase.wimhofPhase === 'hold') {
+                        displayTimer = Math.ceil(timeInPhase) + 'с';
+                        displayPhase = 'Задержка';
+                        progress = Math.min(1, timeInPhase / 60);
+                        wimhofOverride = 'hold';
+                    } else if (tech.isWimHof && phase.wimhofPhase === 'inhaleHold') {
+                        displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
+                        displayPhase = timeInPhase < WH_INHALE_FILL ? 'Вдох' : 'Задержка';
+                        progress = Math.min(1, timeInPhase / WH_INHALE_FILL);
+                        wimhofOverride = 'inhaleHold';
+                    } else {
+                        displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
+                        displayPhase = phase.name;
+                        progress = Math.min(1, timeInPhase / phase.duration);
+                        wimhofOverride = null;
+                    }
+                } else {
+                    displayTimer = tech.isWimHof ? '0/30' : tech.phases[0].duration;
+                    displayPhase = tech.isWimHof ? 'Активное дыхание' : 'Вдох';
+                    progress = 0;
+                    wimhofOverride = null;
+                }
+                breathTimer.textContent = displayTimer;
+                breathPhase.textContent = displayPhase;
+                breathCycle.textContent = 'Цикл ' + sessionCycles;
+                breathHint.textContent = isPlaying ? '' : 'Нажми, чтобы начать';
+                if (isPlaying) {
+                    const isActive = tech.isWimHof && phase.wimhofPhase === 'active';
+                    drawRing(progress, phase.fillDir, phase.isHold, wimhofOverride);
+                    updateGlow(progress, phase.isHold, isActive);
+                    breathCircle.style.transform = `scale(${getCircleScale().toFixed(3)})`;
+                } else {
+                    breathCircle.style.transform = `scale(${SCALE_BASE})`;
+                    breathGlow.style.opacity = '0';
+                    breathGlow.classList.remove('hold-color');
+                    breathRing.style.background = 'transparent';
+                }
+            }
+
+            function advanceToNextPhase() {
+                const tech = getTechnique();
+                phaseIndex++;
+                if (phaseIndex >= tech.phases.length) { phaseIndex = 0; sessionCycles++; }
+                timeInPhase = 0;
+                if (tech.isWimHof) { wimhofActiveCount = 0; wimhofLastToggle = 0; wimhofIsInhale = true; }
+            }
+
+            function tick(timestamp) {
+                if (!isPlaying) return;
+                if (!lastTimestamp) lastTimestamp = timestamp;
+                const delta = Math.min((timestamp - lastTimestamp) / 1000, 0.3);
+                lastTimestamp = timestamp;
+                timeInPhase += delta;
+                const tech = getTechnique();
+                const phase = getCurrentPhase();
+                if (tech.isWimHof && phase.wimhofPhase === 'active') {
+                    const halfCycle = tech.cycleDuration / 2;
+                    if (timeInPhase - wimhofLastToggle >= halfCycle) {
+                        wimhofLastToggle = timeInPhase;
+                        wimhofIsInhale = !wimhofIsInhale;
+                        if (!wimhofIsInhale) wimhofActiveCount++;
+                        if (wimhofActiveCount >= tech.activeCycles) { advanceToNextPhase(); updateDisplay(); animationId = requestAnimationFrame(tick); return; }
+                    }
+                } else if (timeInPhase >= phase.duration) {
+                    advanceToNextPhase();
+                }
+                updateDisplay();
+                animationId = requestAnimationFrame(tick);
+            }
+
+            function startBreathing() {
+                isPlaying = true; lastTimestamp = 0; timeInPhase = 0; phaseIndex = 0; sessionCycles = 0;
+                wimhofActiveCount = 0; wimhofLastToggle = 0; wimhofIsInhale = true;
+                updateDisplay(); animationId = requestAnimationFrame(tick);
+            }
+            function resumeBreathing() { isPlaying = true; lastTimestamp = 0; updateDisplay(); animationId = requestAnimationFrame(tick); }
+            function pauseBreathing() {
+                isPlaying = false; if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+                breathCircle.style.transform = `scale(${SCALE_BASE})`;
+                breathGlow.style.opacity = '0'; breathGlow.classList.remove('hold-color');
+                breathRing.style.background = 'transparent';
+                breathTimer.textContent = '⏸'; breathPhase.textContent = 'Пауза'; breathHint.textContent = 'Нажми, чтобы продолжить';
+            }
+            function toggleBreathing() {
+                if (isPlaying) pauseBreathing();
+                else phaseIndex === 0 && timeInPhase === 0 && sessionCycles === 0 ? startBreathing() : resumeBreathing();
+            }
+            function switchTechnique(technique) {
+                if (isPlaying && animationId) { cancelAnimationFrame(animationId); animationId = null; }
+                isPlaying = false; currentTechnique = technique;
+                phaseIndex = 0; timeInPhase = 0; sessionCycles = 0;
+                wimhofActiveCount = 0; wimhofLastToggle = 0; wimhofIsInhale = true;
+                techniqueBtns.forEach(b => b.classList.remove('active'));
+                document.querySelector(`[data-technique="${technique}"]`).classList.add('active');
+                const tech = getTechnique();
+                const tc = getTechColor();
+                instruction.innerHTML = `<span class="tech-title ${tc.titleClass}">${tech.title}</span>${tech.instruction}`;
+                breathHint.textContent = 'Нажми, чтобы начать';
+                breathCircle.style.transform = `scale(${SCALE_BASE})`;
+                breathGlow.style.opacity = '0'; breathGlow.classList.remove('hold-color');
+                breathRing.style.background = 'transparent';
+                updateDisplay();
+            }
+
+            breathCircleContainer.addEventListener('click', toggleBreathing);
+            techniqueBtns.forEach(btn => btn.addEventListener('click', () => switchTechnique(btn.dataset.technique)));
+            document.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); toggleBreathing(); } });
+
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const themeToggle = document.getElementById('themeToggle');
+            const toggleIcon = document.getElementById('toggleIcon');
+            sidebarToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); sidebarToggle.classList.toggle('active'); });
+            document.addEventListener('click', (e) => { if (!sidebar.contains(e.target) && e.target !== sidebarToggle) { sidebar.classList.remove('open'); sidebarToggle.classList.remove('active'); } });
+            function applyTheme(theme) {
+                if (theme === 'light') { document.body.classList.add('light-theme'); toggleIcon.textContent = '☀️'; }
+                else { document.body.classList.remove('light-theme'); toggleIcon.textContent = '🌙'; }
+            }
+            const savedTheme = localStorage.getItem('breath-theme');
+            applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+            themeToggle.addEventListener('click', () => {
+                const isLight = document.body.classList.contains('light-theme');
+                applyTheme(isLight ? 'dark' : 'light');
+                localStorage.setItem('breath-theme', isLight ? 'dark' : 'light');
+            });
+
+            updateDisplay();
+            const initColor = TECH_COLORS.relax;
+            instruction.innerHTML = `<span class="tech-title ${initColor.titleClass}">${TECHNIQUES.relax.title}</span>${TECHNIQUES.relax.instruction}`;
+        })();
+    </script>
+</body>
+</html>
