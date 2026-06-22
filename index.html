@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Цикл</title>
+    <title>Breath</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -159,7 +159,7 @@
         .page-content {
             flex: 1 0 auto; display: flex; flex-direction: column; align-items: center;
             justify-content: flex-start; width: 100%;
-            padding-top: clamp(3rem, 12vh, 7.5rem);
+            padding-top: clamp(5rem, 17vh, 10rem);
             padding-bottom: 2rem;
         }
         .container {
@@ -188,7 +188,7 @@
         .technique-btn[data-technique="wimhof"].active { background: var(--color-wimhof-bg); color: var(--color-wimhof); }
 
         .breath-circle-container {
-            position: relative; width: 280px; height: 280px; margin: 0 auto;
+            position: relative; width: 280px; height: 280px; margin: 2rem auto 0;
             cursor: pointer; -webkit-tap-highlight-color: transparent;
             flex-shrink: 0;
         }
@@ -197,14 +197,6 @@
             background: var(--circle-bg);
             display: flex; align-items: center; justify-content: center;
             z-index: 2;
-            transition: box-shadow 0.5s ease;
-        }
-        /* Свечение через box-shadow — не обрезается границами! */
-        .breath-circle.glow-active {
-            box-shadow: 0 0 80px 30px var(--accent-glow);
-        }
-        .breath-circle.glow-hold {
-            box-shadow: 0 0 80px 30px var(--accent-hold-glow);
         }
         .breath-ring {
             position: absolute; inset: 0; border-radius: 50%;
@@ -263,12 +255,10 @@
 
         @media (max-width: 600px) {
             body { padding: 0.8rem; padding-bottom: 0; }
-            .page-content { padding-top: clamp(2.25rem, 9vh, 5rem); }
+            .page-content { padding-top: clamp(4rem, 14vh, 8rem); }
             .container { gap: 2.5rem; }
-            .breath-circle-container { width: 240px; height: 240px; }
+            .breath-circle-container { width: 240px; height: 240px; margin: 1.5rem auto 0; }
             .breath-timer { font-size: 3.2rem; }
-            .breath-circle.glow-active { box-shadow: 0 0 60px 25px var(--accent-glow); }
-            .breath-circle.glow-hold { box-shadow: 0 0 60px 25px var(--accent-hold-glow); }
             .instruction { font-size: 0.72rem; max-width: 100%; }
             .instruction .tech-title { font-size: 0.78rem; }
             .technique-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
@@ -369,16 +359,20 @@
             const WH_INHALE_FILL = 3;
             const WH_EXHALE_END = 5;
 
-            const TECH_COLORS = {
-                relax: { main: 'var(--color-relax)', glow: 'var(--color-relax-glow)', titleClass: 'relax-color' },
-                focus: { main: 'var(--color-focus)', glow: 'var(--color-focus-glow)', titleClass: 'focus-color' },
-                calm:  { main: 'var(--color-calm)',  glow: 'var(--color-calm-glow)',  titleClass: 'calm-color' },
-                wimhof:{ main: 'var(--color-wimhof)',glow: 'var(--color-wimhof-glow)',titleClass: 'wimhof-color' }
-            };
+            function glowColor(tech, isHold) {
+                if (isHold) return 'rgba(201,168,126,ALPHA)';
+                const colors = {
+                    relax: 'rgba(179,157,219,ALPHA)',
+                    focus: 'rgba(77,182,172,ALPHA)',
+                    calm: 'rgba(100,181,246,ALPHA)',
+                    wimhof: 'rgba(232,115,74,ALPHA)'
+                };
+                return colors[tech] || colors.relax;
+            }
 
             const TECHNIQUES = {
                 relax: {
-                    title: 'Расслабление',
+                    title: 'Расслабление', titleClass: 'relax-color',
                     instruction: 'Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну',
                     expandDuration: 4, holdDuration: 7, contractDuration: 8,
                     phases: [
@@ -388,7 +382,7 @@
                     ]
                 },
                 focus: {
-                    title: 'Концентрация',
+                    title: 'Концентрация', titleClass: 'focus-color',
                     instruction: 'Вдох 4с, задержка 4с, выдох 4с, задержка 4с<br>Для фокуса и ментальной ясности',
                     expandDuration: 4, holdDuration: 4, contractDuration: 8,
                     phases: [
@@ -399,7 +393,7 @@
                     ]
                 },
                 calm: {
-                    title: 'Успокоение',
+                    title: 'Успокоение', titleClass: 'calm-color',
                     instruction: 'Два коротких вдоха через нос, длинный выдох через рот<br>Для быстрого снятия стресса и тревоги',
                     expandDuration: 4, holdDuration: 0, contractDuration: 8,
                     phases: [
@@ -409,7 +403,7 @@
                     ]
                 },
                 wimhof: {
-                    title: 'Бодрость',
+                    title: 'Бодрость', titleClass: 'wimhof-color',
                     instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с,<br>вдох и задержка 15с, выдох 5с<br>Для бодрости и прилива энергии',
                     isWimHof: true,
                     activeCycles: 30, cycleDuration: 3,
@@ -444,7 +438,6 @@
             function getTechnique() { return TECHNIQUES[currentTechnique]; }
             function getCurrentPhase() { return getTechnique().phases[phaseIndex]; }
             function isWimHof() { return getTechnique().isWimHof; }
-            function getTechColor() { return TECH_COLORS[currentTechnique]; }
 
             function getElapsedInCycle() {
                 const tech = getTechnique();
@@ -494,7 +487,8 @@
             }
 
             function drawRing(progress, fillDir, isHold, wimhofOverride) {
-                const color = getTechColor().main;
+                const colors = { relax: 'var(--color-relax)', focus: 'var(--color-focus)', calm: 'var(--color-calm)', wimhof: 'var(--color-wimhof)' };
+                const color = colors[currentTechnique] || colors.relax;
                 const holdColor = 'var(--accent-hold)';
                 const ringColor = isHold ? holdColor : color;
 
@@ -542,12 +536,30 @@
                 }
             }
 
-            function updateGlow(progress, isHold) {
-                breathCircle.classList.remove('glow-active', 'glow-hold');
-                if (isHold) {
-                    breathCircle.classList.add('glow-hold');
+            function updateGlow(progress, isHold, wimhofPhase) {
+                const spread = window.innerWidth <= 600 ? 15 : 20;
+                const size = window.innerWidth <= 600 ? 40 : 50;
+
+                if (isWimHof()) {
+                    let alpha;
+                    if (wimhofPhase === 'active') {
+                        // Привязано к фазе вдоха/выдоха
+                        alpha = wimhofIsInhale ? progress * 0.7 : (1 - progress) * 0.7;
+                    } else if (wimhofPhase === 'hold') {
+                        // Задержка — статика на полуяркости
+                        alpha = 0.5;
+                    } else {
+                        // Остальные фазы — по прогрессу
+                        alpha = 0.3 + progress * 0.4;
+                    }
+                    alpha = Math.round(alpha * 100) / 100;
+                    const color = glowColor(currentTechnique, isHold).replace('ALPHA', alpha);
+                    breathCircle.style.boxShadow = `0 0 ${size}px ${spread}px ${color}`;
                 } else {
-                    breathCircle.classList.add('glow-active');
+                    const intensity = 1 - Math.pow(2 * progress - 1, 2);
+                    const alpha = Math.round((0.25 + intensity * 0.55) * 100) / 100;
+                    const color = glowColor(currentTechnique, isHold).replace('ALPHA', alpha);
+                    breathCircle.style.boxShadow = `0 0 ${size}px ${spread}px ${color}`;
                 }
             }
 
@@ -595,12 +607,13 @@
                 breathCycle.textContent = 'Цикл ' + sessionCycles;
                 breathHint.textContent = isPlaying ? '' : 'Нажми, чтобы начать';
                 if (isPlaying) {
+                    const wimhofPhase = tech.isWimHof ? phase.wimhofPhase : null;
                     drawRing(progress, phase.fillDir, phase.isHold, wimhofOverride);
-                    updateGlow(progress, phase.isHold);
+                    updateGlow(progress, phase.isHold, wimhofPhase);
                     breathCircle.style.transform = `scale(${getCircleScale().toFixed(3)})`;
                 } else {
                     breathCircle.style.transform = `scale(${SCALE_BASE})`;
-                    breathCircle.classList.remove('glow-active', 'glow-hold');
+                    breathCircle.style.boxShadow = 'none';
                     breathRing.style.background = 'transparent';
                 }
             }
@@ -645,7 +658,7 @@
             function pauseBreathing() {
                 isPlaying = false; if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
                 breathCircle.style.transform = `scale(${SCALE_BASE})`;
-                breathCircle.classList.remove('glow-active', 'glow-hold');
+                breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
                 breathTimer.textContent = '';
                 breathPhase.textContent = 'Пауза';
@@ -663,11 +676,10 @@
                 techniqueBtns.forEach(b => b.classList.remove('active'));
                 document.querySelector(`[data-technique="${technique}"]`).classList.add('active');
                 const tech = getTechnique();
-                const tc = getTechColor();
-                instruction.innerHTML = `<span class="tech-title ${tc.titleClass}">${tech.title}</span>${tech.instruction}`;
+                instruction.innerHTML = `<span class="tech-title ${tech.titleClass}">${tech.title}</span>${tech.instruction}`;
                 breathHint.textContent = 'Нажми, чтобы начать';
                 breathCircle.style.transform = `scale(${SCALE_BASE})`;
-                breathCircle.classList.remove('glow-active', 'glow-hold');
+                breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
                 updateDisplay();
             }
@@ -695,8 +707,8 @@
             });
 
             updateDisplay();
-            const initColor = TECH_COLORS.relax;
-            instruction.innerHTML = `<span class="tech-title ${initColor.titleClass}">${TECHNIQUES.relax.title}</span>${TECHNIQUES.relax.instruction}`;
+            const initTech = TECHNIQUES.relax;
+            instruction.innerHTML = `<span class="tech-title ${initTech.titleClass}">${initTech.title}</span>${initTech.instruction}`;
         })();
     </script>
 </body>
