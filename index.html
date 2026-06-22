@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Цикл</title>
+    <title>Breath</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -187,19 +187,31 @@
         .technique-btn[data-technique="calm"].active { background: var(--color-calm-bg); color: var(--color-calm); }
         .technique-btn[data-technique="wimhof"].active { background: var(--color-wimhof-bg); color: var(--color-wimhof); }
 
-        .breath-circle-container {
+        /* Обёртка круга — overflow: visible! */
+        .breath-circle-wrapper {
             position: relative; width: 280px; height: 280px; margin: 0 auto;
-            cursor: pointer; -webkit-tap-highlight-color: transparent;
             flex-shrink: 0;
         }
+        /* Свечение — снаружи контейнера круга, больше не обрезается */
         .breath-glow {
-            position: absolute; top: 50%; left: 50%;
-            width: 240px; height: 240px; border-radius: 50%;
-            background: var(--accent); filter: blur(50px);
-            opacity: 0; transform: translate(-50%, -50%);
-            transition: background 0.5s ease; pointer-events: none; z-index: 1;
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 280px; height: 280px;
+            border-radius: 50%;
+            background: var(--accent);
+            filter: blur(60px);
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            transition: background 0.5s ease;
+            pointer-events: none;
+            z-index: 0;
         }
         .breath-glow.hold-color { background: var(--accent-hold); }
+        .breath-circle-container {
+            position: relative; width: 100%; height: 100%;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+            z-index: 1;
+        }
         .breath-circle {
             position: relative; width: 100%; height: 100%; border-radius: 50%;
             background: var(--circle-bg);
@@ -265,9 +277,9 @@
             body { padding: 0.8rem; padding-bottom: 0; }
             .page-content { padding-top: clamp(2.25rem, 9vh, 5rem); }
             .container { gap: 2.5rem; }
-            .breath-circle-container { width: 240px; height: 240px; }
+            .breath-circle-wrapper { width: 240px; height: 240px; }
             .breath-timer { font-size: 3.2rem; }
-            .breath-glow { width: 200px; height: 200px; filter: blur(40px); }
+            .breath-glow { width: 240px; height: 240px; filter: blur(50px); }
             .instruction { font-size: 0.72rem; max-width: 100%; }
             .instruction .tech-title { font-size: 0.78rem; }
             .technique-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
@@ -322,15 +334,17 @@
                 </button>
             </div>
 
-            <div class="breath-circle-container" id="breathCircleContainer">
+            <div class="breath-circle-wrapper">
                 <div class="breath-glow" id="breathGlow"></div>
-                <div class="breath-circle" id="breathCircle">
-                    <div class="breath-ring" id="breathRing"></div>
-                    <div class="breath-circle-inner">
-                        <div class="breath-timer" id="breathTimer">4</div>
-                        <div class="breath-phase" id="breathPhase">Вдох</div>
-                        <div class="breath-cycle" id="breathCycle">Цикл 0</div>
-                        <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
+                <div class="breath-circle-container" id="breathCircleContainer">
+                    <div class="breath-circle" id="breathCircle">
+                        <div class="breath-ring" id="breathRing"></div>
+                        <div class="breath-circle-inner">
+                            <div class="breath-timer" id="breathTimer">4</div>
+                            <div class="breath-phase" id="breathPhase">Вдох</div>
+                            <div class="breath-cycle" id="breathCycle">Цикл 0</div>
+                            <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -431,7 +445,7 @@
             let animationId = null;
             let lastTimestamp = 0;
 
-            const breathCircleContainer = document.getElementById('breathCircleContainer');
+            const breathCircleWrapper = document.querySelector('.breath-circle-wrapper');
             const breathCircle = document.getElementById('breathCircle');
             const breathRing = document.getElementById('breathRing');
             const breathGlow = document.getElementById('breathGlow');
@@ -683,7 +697,7 @@
                 updateDisplay();
             }
 
-            breathCircleContainer.addEventListener('click', toggleBreathing);
+            breathCircleWrapper.addEventListener('click', toggleBreathing);
             techniqueBtns.forEach(btn => btn.addEventListener('click', () => switchTechnique(btn.dataset.technique)));
             document.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); toggleBreathing(); } });
 
