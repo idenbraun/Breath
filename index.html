@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Дыхание</title>
+    <title>Цикл</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -30,7 +30,8 @@
             --label-color: #6a6a6a;
             --sidebar-border: #1a1a1a;
             --toggle-track: #3a3a3a;
-            /* Цвета техник */
+            --modal-bg: rgba(10,10,10,0.98);
+            --modal-border: #2a2a2a;
             --color-relax: #b39ddb;
             --color-relax-glow: rgba(179, 157, 219, 0.6);
             --color-relax-bg: rgba(179, 157, 219, 0.2);
@@ -70,6 +71,8 @@
             --label-color: #777;
             --sidebar-border: #e0e0e0;
             --toggle-track: #ddd;
+            --modal-bg: rgba(250,250,250,0.98);
+            --modal-border: #ddd;
             --color-relax: #9575cd;
             --color-relax-glow: rgba(149, 117, 205, 0.5);
             --color-relax-bg: rgba(149, 117, 205, 0.15);
@@ -95,6 +98,54 @@
             background: var(--bg-gradient);
             transition: background 0.5s ease, color 0.5s ease;
         }
+
+        /* Модальное окно предупреждения */
+        .disclaimer-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .disclaimer-overlay.hidden { display: none; }
+        .disclaimer-modal {
+            background: var(--modal-bg);
+            border: 1px solid var(--modal-border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            display: flex; flex-direction: column; gap: 1.5rem;
+        }
+        .disclaimer-icon { font-size: 2.5rem; line-height: 1; }
+        .disclaimer-title {
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--text);
+        }
+        .disclaimer-text {
+            font-size: 0.75rem; color: var(--text-secondary);
+            line-height: 1.7; letter-spacing: 0.03em;
+            text-align: left;
+        }
+        .disclaimer-text strong { color: var(--text); }
+        .disclaimer-btn {
+            padding: 0.8rem 2rem;
+            border-radius: 2.5rem;
+            border: none;
+            background: var(--color-relax);
+            color: #000;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .disclaimer-btn:hover { opacity: 0.85; transform: scale(1.02); }
 
         .sidebar-toggle {
             position: fixed; left: 0; top: 50%; transform: translateY(-50%);
@@ -142,7 +193,6 @@
         .technique-btn .tech-pattern { font-size: 0.55rem; opacity: 0.6; letter-spacing: 0.06em; }
         .technique-btn.active .tech-pattern { opacity: 0.9; }
         .technique-btn:hover:not(.active) { color: #aaa; }
-        /* Цвета кнопок по техникам */
         .technique-btn[data-technique="relax"].active { background: var(--color-relax-bg); color: var(--color-relax); }
         .technique-btn[data-technique="focus"].active { background: var(--color-focus-bg); color: var(--color-focus); }
         .technique-btn[data-technique="calm"].active { background: var(--color-calm-bg); color: var(--color-calm); }
@@ -232,11 +282,27 @@
             .technique-btn { padding: 0.5rem 0.6rem; }
             .technique-btn .tech-name { font-size: 0.62rem; }
             .technique-btn .tech-pattern { font-size: 0.48rem; }
+            .disclaimer-modal { padding: 1.5rem; }
+            .disclaimer-text { font-size: 0.7rem; }
             .footer .links { gap: 1.2rem; font-size: 0.65rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Предупреждение при первом посещении -->
+    <div class="disclaimer-overlay" id="disclaimerOverlay">
+        <div class="disclaimer-modal">
+            <div class="disclaimer-icon">⚠️</div>
+            <div class="disclaimer-title">Важно</div>
+            <div class="disclaimer-text">
+                <p>Практики выполняются <strong>только в положении сидя или лёжа</strong>, в безопасной обстановке.</p>
+                <p style="margin-top:0.5rem;">Не практикуйте <strong>за рулём</strong>, во время управления техникой, в воде или в других ситуациях, где потеря сознания может привести к травме.</p>
+                <p style="margin-top:0.5rem;">Дыхательные техники влияют на уровень кислорода в крови. Если вы новичок — начните с <strong>«Расслабления»</strong>. При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме.</p>
+            </div>
+            <button class="disclaimer-btn" id="disclaimerBtn">Принимаю</button>
+        </div>
+    </div>
+
     <button class="sidebar-toggle" id="sidebarToggle" title="Меню"></button>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-label">Тема</div>
@@ -295,6 +361,23 @@
     </div>
 
     <script>
+        // ==================== ДИСКЛЕЙМЕР ====================
+        (function() {
+            const DISCLAIMER_KEY = 'breath-disclaimer-accepted';
+            const overlay = document.getElementById('disclaimerOverlay');
+            const btn = document.getElementById('disclaimerBtn');
+
+            if (localStorage.getItem(DISCLAIMER_KEY)) {
+                overlay.classList.add('hidden');
+            }
+
+            btn.addEventListener('click', () => {
+                localStorage.setItem(DISCLAIMER_KEY, '1');
+                overlay.classList.add('hidden');
+            });
+        })();
+
+        // ==================== ОСНОВНОЙ КОД ====================
         (function() {
             const SCALE_MIN = 0.88;
             const SCALE_MAX = 1.12;
@@ -303,7 +386,6 @@
             const WH_HOLD_EXPAND = 12;
             const WH_INHALE_FILL = 3;
 
-            // Карта цветов для техник
             const TECH_COLORS = {
                 relax: { main: 'var(--color-relax)', glow: 'var(--color-relax-glow)', titleClass: 'relax-color' },
                 focus: { main: 'var(--color-focus)', glow: 'var(--color-focus-glow)', titleClass: 'focus-color' },
