@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Breath</title>
+    <title>Цикл</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -187,15 +187,12 @@
         .technique-btn[data-technique="calm"].active { background: var(--color-calm-bg); color: var(--color-calm); }
         .technique-btn[data-technique="wimhof"].active { background: var(--color-wimhof-bg); color: var(--color-wimhof); }
 
-        /* Обёртка круга — большой прозрачный контейнер */
         .breath-circle-wrapper {
             position: relative;
-            width: 380px;
-            height: 380px;
+            width: 380px; height: 380px;
             flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
         }
-        /* Свечение — растекается свободно, границы wrapper'а достаточно далеко */
         .breath-glow {
             position: absolute;
             top: 50%; left: 50%;
@@ -281,10 +278,10 @@
             body { padding: 0.8rem; padding-bottom: 0; }
             .page-content { padding-top: clamp(2.25rem, 9vh, 5rem); }
             .container { gap: 2.5rem; }
-            .breath-circle-wrapper { width: 320px; height: 320px; }
+            .breath-circle-wrapper { width: 340px; height: 340px; }
             .breath-circle-container { width: 240px; height: 240px; }
             .breath-timer { font-size: 3.2rem; }
-            .breath-glow { width: 260px; height: 260px; filter: blur(45px); }
+            .breath-glow { width: 300px; height: 300px; filter: blur(50px); }
             .instruction { font-size: 0.72rem; max-width: 100%; }
             .instruction .tech-title { font-size: 0.78rem; }
             .technique-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
