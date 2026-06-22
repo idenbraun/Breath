@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Breath</title>
+    <title>Цикл</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -44,6 +44,7 @@
             --color-wimhof: #e8734a;
             --color-wimhof-glow: rgba(232, 115, 74, 0.6);
             --color-wimhof-bg: rgba(232, 115, 74, 0.2);
+            --inactive-border: rgba(255,255,255,0.06);
         }
 
         .light-theme {
@@ -85,6 +86,7 @@
             --color-wimhof: #d4653a;
             --color-wimhof-glow: rgba(212, 101, 58, 0.5);
             --color-wimhof-bg: rgba(212, 101, 58, 0.15);
+            --inactive-border: rgba(0,0,0,0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -99,7 +101,6 @@
             transition: background 0.5s ease, color 0.5s ease;
         }
 
-        /* Модальное окно предупреждения */
         .disclaimer-overlay {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.8);
@@ -173,16 +174,26 @@
         .toggle-thumb { position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; left: 3px; top: 3px; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; }
         .light-theme .toggle-thumb { transform: translateX(24px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 
-        .page-content { flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding-bottom: 2rem; }
-        .container { width: 100%; max-width: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 3rem; }
+        .page-content {
+            flex: 1 0 auto;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            padding-top: clamp(3rem, 12vh, 7.5rem);
+            padding-bottom: 2rem;
+        }
+        .container {
+            width: 100%; max-width: 700px;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; gap: 3rem;
+        }
 
         .technique-selector {
             display: flex; gap: 0.35rem;
-            background: rgba(255,255,255,0.03); border-radius: 3rem; padding: 0.35rem;
-            border: 1px solid var(--panel-border); width: 100%;
+            width: 100%;
         }
         .technique-btn {
-            flex: 1; padding: 0.6rem 0.5rem; border-radius: 2.5rem; border: none;
+            flex: 1; padding: 0.6rem 0.5rem; border-radius: 2.5rem; border: 1px solid var(--inactive-border);
             background: transparent; color: var(--text-dim);
             font-family: inherit; font-size: 0.72rem; font-weight: 500;
             letter-spacing: 0.04em; cursor: pointer;
@@ -192,7 +203,8 @@
         .technique-btn .tech-name { font-weight: 600; font-size: 0.72rem; }
         .technique-btn .tech-pattern { font-size: 0.55rem; opacity: 0.6; letter-spacing: 0.06em; }
         .technique-btn.active .tech-pattern { opacity: 0.9; }
-        .technique-btn:hover:not(.active) { color: #aaa; }
+        .technique-btn:hover:not(.active) { color: #aaa; border-color: var(--btn-border); }
+        .technique-btn.active { border-color: transparent; }
         .technique-btn[data-technique="relax"].active { background: var(--color-relax-bg); color: var(--color-relax); }
         .technique-btn[data-technique="focus"].active { background: var(--color-focus-bg); color: var(--color-focus); }
         .technique-btn[data-technique="calm"].active { background: var(--color-calm-bg); color: var(--color-calm); }
@@ -201,6 +213,7 @@
         .breath-circle-container {
             position: relative; width: 280px; height: 280px; margin: 0 auto;
             cursor: pointer; -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
         }
         .breath-glow {
             position: absolute; top: 50%; left: 50%;
@@ -247,6 +260,7 @@
             font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.25em;
             color: var(--text-muted); opacity: 0.5; order: 4;
         }
+
         .instruction {
             font-size: 0.8rem; color: var(--text-muted);
             letter-spacing: 0.04em; line-height: 1.8; max-width: 500px; opacity: 0.7;
@@ -272,6 +286,7 @@
 
         @media (max-width: 600px) {
             body { padding: 0.8rem; padding-bottom: 0; }
+            .page-content { padding-top: clamp(2.25rem, 9vh, 5rem); }
             .container { gap: 2.5rem; }
             .breath-circle-container { width: 240px; height: 240px; }
             .breath-timer { font-size: 3.2rem; }
@@ -289,7 +304,6 @@
     </style>
 </head>
 <body>
-    <!-- Предупреждение при первом посещении -->
     <div class="disclaimer-overlay" id="disclaimerOverlay">
         <div class="disclaimer-modal">
             <div class="disclaimer-icon">⚠️</div>
@@ -361,23 +375,14 @@
     </div>
 
     <script>
-        // ==================== ДИСКЛЕЙМЕР ====================
         (function() {
             const DISCLAIMER_KEY = 'breath-disclaimer-accepted';
             const overlay = document.getElementById('disclaimerOverlay');
             const btn = document.getElementById('disclaimerBtn');
-
-            if (localStorage.getItem(DISCLAIMER_KEY)) {
-                overlay.classList.add('hidden');
-            }
-
-            btn.addEventListener('click', () => {
-                localStorage.setItem(DISCLAIMER_KEY, '1');
-                overlay.classList.add('hidden');
-            });
+            if (localStorage.getItem(DISCLAIMER_KEY)) overlay.classList.add('hidden');
+            btn.addEventListener('click', () => { localStorage.setItem(DISCLAIMER_KEY, '1'); overlay.classList.add('hidden'); });
         })();
 
-        // ==================== ОСНОВНОЙ КОД ====================
         (function() {
             const SCALE_MIN = 0.88;
             const SCALE_MAX = 1.12;
@@ -385,6 +390,7 @@
             const WH_HOLD_SHRINK = 6;
             const WH_HOLD_EXPAND = 12;
             const WH_INHALE_FILL = 3;
+            const WH_EXHALE_END = 5;
 
             const TECH_COLORS = {
                 relax: { main: 'var(--color-relax)', glow: 'var(--color-relax-glow)', titleClass: 'relax-color' },
@@ -427,13 +433,14 @@
                 },
                 wimhof: {
                     title: 'Бодрость',
-                    instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с, вдох и задержка 15с<br>Для бодрости и прилива энергии',
+                    instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с,<br>вдох и задержка 15с, выдох 5с<br>Для бодрости и прилива энергии',
                     isWimHof: true,
                     activeCycles: 30, cycleDuration: 3,
                     phases: [
                         { name: 'Активное дыхание', duration: 90, isHold: false, fillDir: 'up', wimhofPhase: 'active' },
                         { name: 'Задержка', duration: 60, isHold: true, fillDir: 'hold', wimhofPhase: 'hold' },
-                        { name: 'Вдох-задержка', duration: 15, isHold: true, fillDir: 'hold', wimhofPhase: 'inhaleHold' }
+                        { name: 'Вдох-задержка', duration: 15, isHold: true, fillDir: 'hold', wimhofPhase: 'inhaleHold' },
+                        { name: 'Выдох', duration: WH_EXHALE_END, isHold: false, fillDir: 'down', wimhofPhase: 'exhaleEnd' }
                     ]
                 }
             };
@@ -501,9 +508,13 @@
                         const progress = Math.min(1, elapsedExpand / WH_HOLD_EXPAND);
                         return SCALE_MIN + progress * (SCALE_MAX - SCALE_MIN);
                     }
-                } else {
+                } else if (phase.wimhofPhase === 'inhaleHold') {
                     return SCALE_MAX;
+                } else if (phase.wimhofPhase === 'exhaleEnd') {
+                    const progress = Math.min(1, timeInPhase / phase.duration);
+                    return SCALE_MAX - progress * (SCALE_MAX - SCALE_BASE);
                 }
+                return SCALE_BASE;
             }
 
             function drawRing(progress, fillDir, isHold, wimhofOverride) {
@@ -536,6 +547,12 @@
                         const half = angle / 2;
                         breathRing.style.background = `conic-gradient(from 0deg, transparent ${180 - half}deg, ${color} ${180 - half}deg, ${color} ${180 + half}deg, transparent ${180 + half}deg)`;
                     }
+                    return;
+                }
+                if (wimhofOverride === 'exhaleEnd') {
+                    const angle = progress * 360;
+                    const gap = angle / 2;
+                    breathRing.style.background = `conic-gradient(from 0deg, transparent ${gap}deg, ${color} ${gap}deg, ${color} ${360 - gap}deg, transparent ${360 - gap}deg)`;
                     return;
                 }
                 if (fillDir === 'hold' || isHold) { breathRing.style.background = `conic-gradient(${ringColor} 0deg, ${ringColor} 360deg)`; return; }
@@ -579,7 +596,7 @@
                         progress = Math.min(1, (timeInPhase - wimhofLastToggle) / halfCycle);
                         wimhofOverride = 'active';
                     } else if (tech.isWimHof && phase.wimhofPhase === 'hold') {
-                        displayTimer = Math.ceil(timeInPhase) + 'с';
+                        displayTimer = Math.ceil(timeInPhase);
                         displayPhase = 'Задержка';
                         progress = Math.min(1, timeInPhase / 60);
                         wimhofOverride = 'hold';
@@ -588,6 +605,11 @@
                         displayPhase = timeInPhase < WH_INHALE_FILL ? 'Вдох' : 'Задержка';
                         progress = Math.min(1, timeInPhase / WH_INHALE_FILL);
                         wimhofOverride = 'inhaleHold';
+                    } else if (tech.isWimHof && phase.wimhofPhase === 'exhaleEnd') {
+                        displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
+                        displayPhase = 'Выдох';
+                        progress = Math.min(1, timeInPhase / phase.duration);
+                        wimhofOverride = 'exhaleEnd';
                     } else {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
                         displayPhase = phase.name;
@@ -622,7 +644,7 @@
                 phaseIndex++;
                 if (phaseIndex >= tech.phases.length) { phaseIndex = 0; sessionCycles++; }
                 timeInPhase = 0;
-                if (tech.isWimHof) { wimhofActiveCount = 0; wimhofLastToggle = 0; wimhofIsInhale = true; }
+                if (tech.isWimHof && phaseIndex === 0) { wimhofActiveCount = 0; wimhofLastToggle = 0; wimhofIsInhale = true; }
             }
 
             function tick(timestamp) {
@@ -659,7 +681,9 @@
                 breathCircle.style.transform = `scale(${SCALE_BASE})`;
                 breathGlow.style.opacity = '0'; breathGlow.classList.remove('hold-color');
                 breathRing.style.background = 'transparent';
-                breathTimer.textContent = '⏸'; breathPhase.textContent = 'Пауза'; breathHint.textContent = 'Нажми, чтобы продолжить';
+                breathTimer.textContent = '';
+                breathPhase.textContent = 'Пауза';
+                breathHint.textContent = 'Нажми, чтобы продолжить';
             }
             function toggleBreathing() {
                 if (isPlaying) pauseBreathing();
