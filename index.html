@@ -187,19 +187,22 @@
         .technique-btn[data-technique="calm"].active { background: var(--color-calm-bg); color: var(--color-calm); }
         .technique-btn[data-technique="wimhof"].active { background: var(--color-wimhof-bg); color: var(--color-wimhof); }
 
-        /* Обёртка круга — overflow: visible! */
+        /* Обёртка круга — большой прозрачный контейнер */
         .breath-circle-wrapper {
-            position: relative; width: 280px; height: 280px; margin: 0 auto;
+            position: relative;
+            width: 380px;
+            height: 380px;
             flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
         }
-        /* Свечение — снаружи контейнера круга, больше не обрезается */
+        /* Свечение — растекается свободно, границы wrapper'а достаточно далеко */
         .breath-glow {
             position: absolute;
             top: 50%; left: 50%;
-            width: 280px; height: 280px;
+            width: 300px; height: 300px;
             border-radius: 50%;
             background: var(--accent);
-            filter: blur(60px);
+            filter: blur(55px);
             opacity: 0;
             transform: translate(-50%, -50%);
             transition: background 0.5s ease;
@@ -208,7 +211,8 @@
         }
         .breath-glow.hold-color { background: var(--accent-hold); }
         .breath-circle-container {
-            position: relative; width: 100%; height: 100%;
+            position: relative;
+            width: 280px; height: 280px;
             cursor: pointer; -webkit-tap-highlight-color: transparent;
             z-index: 1;
         }
@@ -277,9 +281,10 @@
             body { padding: 0.8rem; padding-bottom: 0; }
             .page-content { padding-top: clamp(2.25rem, 9vh, 5rem); }
             .container { gap: 2.5rem; }
-            .breath-circle-wrapper { width: 240px; height: 240px; }
+            .breath-circle-wrapper { width: 320px; height: 320px; }
+            .breath-circle-container { width: 240px; height: 240px; }
             .breath-timer { font-size: 3.2rem; }
-            .breath-glow { width: 240px; height: 240px; filter: blur(50px); }
+            .breath-glow { width: 260px; height: 260px; filter: blur(45px); }
             .instruction { font-size: 0.72rem; max-width: 100%; }
             .instruction .tech-title { font-size: 0.78rem; }
             .technique-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
@@ -334,7 +339,7 @@
                 </button>
             </div>
 
-            <div class="breath-circle-wrapper">
+            <div class="breath-circle-wrapper" id="breathCircleWrapper">
                 <div class="breath-glow" id="breathGlow"></div>
                 <div class="breath-circle-container" id="breathCircleContainer">
                     <div class="breath-circle" id="breathCircle">
@@ -445,7 +450,7 @@
             let animationId = null;
             let lastTimestamp = 0;
 
-            const breathCircleWrapper = document.querySelector('.breath-circle-wrapper');
+            const breathCircleWrapper = document.getElementById('breathCircleWrapper');
             const breathCircle = document.getElementById('breathCircle');
             const breathRing = document.getElementById('breathRing');
             const breathGlow = document.getElementById('breathGlow');
