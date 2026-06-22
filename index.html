@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Breath</title>
+    <title>Цикл</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -187,41 +187,24 @@
         .technique-btn[data-technique="calm"].active { background: var(--color-calm-bg); color: var(--color-calm); }
         .technique-btn[data-technique="wimhof"].active { background: var(--color-wimhof-bg); color: var(--color-wimhof); }
 
-        /* Единый контейнер для круга и свечения */
-        .breath-circle-wrapper {
-            position: relative;
-            width: 280px; height: 280px;
-            flex-shrink: 0;
-            overflow: visible;
-        }
-        .breath-glow {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 300px; height: 300px;
-            border-radius: 50%;
-            background: var(--accent);
-            filter: blur(55px);
-            opacity: 0;
-            transform: translate(-50%, -50%);
-            transition: background 0.5s ease;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .breath-glow.hold-color { background: var(--accent-hold); }
         .breath-circle-container {
-            position: absolute;
-            inset: 0;
+            position: relative; width: 280px; height: 280px; margin: 0 auto;
             cursor: pointer; -webkit-tap-highlight-color: transparent;
-            z-index: 1;
-            overflow: visible;
+            flex-shrink: 0;
         }
         .breath-circle {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
+            position: relative; width: 100%; height: 100%; border-radius: 50%;
             background: var(--circle-bg);
             display: flex; align-items: center; justify-content: center;
             z-index: 2;
+            transition: box-shadow 0.5s ease;
+        }
+        /* Свечение через box-shadow — не обрезается границами! */
+        .breath-circle.glow-active {
+            box-shadow: 0 0 80px 30px var(--accent-glow);
+        }
+        .breath-circle.glow-hold {
+            box-shadow: 0 0 80px 30px var(--accent-hold-glow);
         }
         .breath-ring {
             position: absolute; inset: 0; border-radius: 50%;
@@ -282,9 +265,10 @@
             body { padding: 0.8rem; padding-bottom: 0; }
             .page-content { padding-top: clamp(2.25rem, 9vh, 5rem); }
             .container { gap: 2.5rem; }
-            .breath-circle-wrapper { width: 240px; height: 240px; }
+            .breath-circle-container { width: 240px; height: 240px; }
             .breath-timer { font-size: 3.2rem; }
-            .breath-glow { width: 260px; height: 260px; filter: blur(45px); }
+            .breath-circle.glow-active { box-shadow: 0 0 60px 25px var(--accent-glow); }
+            .breath-circle.glow-hold { box-shadow: 0 0 60px 25px var(--accent-hold-glow); }
             .instruction { font-size: 0.72rem; max-width: 100%; }
             .instruction .tech-title { font-size: 0.78rem; }
             .technique-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
@@ -339,17 +323,14 @@
                 </button>
             </div>
 
-            <div class="breath-circle-wrapper" id="breathCircleWrapper">
-                <div class="breath-glow" id="breathGlow"></div>
-                <div class="breath-circle-container" id="breathCircleContainer">
-                    <div class="breath-circle" id="breathCircle">
-                        <div class="breath-ring" id="breathRing"></div>
-                        <div class="breath-circle-inner">
-                            <div class="breath-timer" id="breathTimer">4</div>
-                            <div class="breath-phase" id="breathPhase">Вдох</div>
-                            <div class="breath-cycle" id="breathCycle">Цикл 0</div>
-                            <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
-                        </div>
+            <div class="breath-circle-container" id="breathCircleContainer">
+                <div class="breath-circle" id="breathCircle">
+                    <div class="breath-ring" id="breathRing"></div>
+                    <div class="breath-circle-inner">
+                        <div class="breath-timer" id="breathTimer">4</div>
+                        <div class="breath-phase" id="breathPhase">Вдох</div>
+                        <div class="breath-cycle" id="breathCycle">Цикл 0</div>
+                        <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
                     </div>
                 </div>
             </div>
@@ -450,10 +431,9 @@
             let animationId = null;
             let lastTimestamp = 0;
 
-            const breathCircleWrapper = document.getElementById('breathCircleWrapper');
+            const breathCircleContainer = document.getElementById('breathCircleContainer');
             const breathCircle = document.getElementById('breathCircle');
             const breathRing = document.getElementById('breathRing');
-            const breathGlow = document.getElementById('breathGlow');
             const breathPhase = document.getElementById('breathPhase');
             const breathTimer = document.getElementById('breathTimer');
             const breathCycle = document.getElementById('breathCycle');
@@ -562,20 +542,12 @@
                 }
             }
 
-            function updateGlow(progress, isHold, isWimhofActive) {
-                breathGlow.classList.remove('hold-color');
+            function updateGlow(progress, isHold) {
+                breathCircle.classList.remove('glow-active', 'glow-hold');
                 if (isHold) {
-                    breathGlow.style.background = 'var(--accent-hold)';
-                    breathGlow.classList.add('hold-color');
+                    breathCircle.classList.add('glow-hold');
                 } else {
-                    breathGlow.style.background = getTechColor().glow;
-                }
-                if (isWimHof()) {
-                    const pulse = 0.4 + Math.sin(Date.now() / 1000 * 2) * 0.2;
-                    breathGlow.style.opacity = pulse.toFixed(3);
-                } else {
-                    const intensity = 1 - Math.pow(2 * progress - 1, 2);
-                    breathGlow.style.opacity = (0.1 + intensity * 0.55).toFixed(3);
+                    breathCircle.classList.add('glow-active');
                 }
             }
 
@@ -623,14 +595,12 @@
                 breathCycle.textContent = 'Цикл ' + sessionCycles;
                 breathHint.textContent = isPlaying ? '' : 'Нажми, чтобы начать';
                 if (isPlaying) {
-                    const isActive = tech.isWimHof && phase.wimhofPhase === 'active';
                     drawRing(progress, phase.fillDir, phase.isHold, wimhofOverride);
-                    updateGlow(progress, phase.isHold, isActive);
+                    updateGlow(progress, phase.isHold);
                     breathCircle.style.transform = `scale(${getCircleScale().toFixed(3)})`;
                 } else {
                     breathCircle.style.transform = `scale(${SCALE_BASE})`;
-                    breathGlow.style.opacity = '0';
-                    breathGlow.classList.remove('hold-color');
+                    breathCircle.classList.remove('glow-active', 'glow-hold');
                     breathRing.style.background = 'transparent';
                 }
             }
@@ -675,7 +645,7 @@
             function pauseBreathing() {
                 isPlaying = false; if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
                 breathCircle.style.transform = `scale(${SCALE_BASE})`;
-                breathGlow.style.opacity = '0'; breathGlow.classList.remove('hold-color');
+                breathCircle.classList.remove('glow-active', 'glow-hold');
                 breathRing.style.background = 'transparent';
                 breathTimer.textContent = '';
                 breathPhase.textContent = 'Пауза';
@@ -697,12 +667,12 @@
                 instruction.innerHTML = `<span class="tech-title ${tc.titleClass}">${tech.title}</span>${tech.instruction}`;
                 breathHint.textContent = 'Нажми, чтобы начать';
                 breathCircle.style.transform = `scale(${SCALE_BASE})`;
-                breathGlow.style.opacity = '0'; breathGlow.classList.remove('hold-color');
+                breathCircle.classList.remove('glow-active', 'glow-hold');
                 breathRing.style.background = 'transparent';
                 updateDisplay();
             }
 
-            breathCircleWrapper.addEventListener('click', toggleBreathing);
+            breathCircleContainer.addEventListener('click', toggleBreathing);
             techniqueBtns.forEach(btn => btn.addEventListener('click', () => switchTechnique(btn.dataset.technique)));
             document.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); toggleBreathing(); } });
 
