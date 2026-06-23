@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Breath</title>
+    <title>Цикл</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -45,6 +45,8 @@
             --color-wimhof-glow: rgba(232, 115, 74, 0.6);
             --color-wimhof-bg: rgba(232, 115, 74, 0.2);
             --inactive-border: rgba(255,255,255,0.06);
+            --warn-bg: #1a1410;
+            --warn-border: #3a2a1a;
         }
 
         .light-theme {
@@ -87,6 +89,8 @@
             --color-wimhof-glow: rgba(212, 101, 58, 0.5);
             --color-wimhof-bg: rgba(212, 101, 58, 0.15);
             --inactive-border: rgba(0,0,0,0.08);
+            --warn-bg: #fff8f0;
+            --warn-border: #e0d0b0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -99,36 +103,10 @@
             color: var(--text); letter-spacing: -0.01em;
             background: var(--bg-gradient);
             transition: background 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
         }
 
-        .disclaimer-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100;
-            display: flex; align-items: center; justify-content: center;
-            padding: 1.5rem; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        }
-        .disclaimer-overlay.hidden { display: none; }
-        .disclaimer-modal {
-            background: var(--modal-bg); border: 1px solid var(--modal-border);
-            border-radius: 1.5rem; padding: 2rem; max-width: 400px; width: 100%;
-            text-align: center; display: flex; flex-direction: column; gap: 1.5rem;
-        }
-        .disclaimer-icon { font-size: 2.5rem; line-height: 1; }
-        .disclaimer-title {
-            font-size: 0.85rem; font-weight: 700; letter-spacing: 0.15em;
-            text-transform: uppercase; color: var(--text);
-        }
-        .disclaimer-text {
-            font-size: 0.75rem; color: var(--text-secondary);
-            line-height: 1.7; letter-spacing: 0.03em; text-align: left;
-        }
-        .disclaimer-text strong { color: var(--text); }
-        .disclaimer-btn {
-            padding: 0.8rem 2rem; border-radius: 2.5rem; border: none;
-            background: var(--color-relax); color: #000;
-            font-family: inherit; font-size: 0.8rem; font-weight: 600;
-            letter-spacing: 0.1em; cursor: pointer; transition: all 0.25s ease;
-        }
-        .disclaimer-btn:hover { opacity: 0.85; transform: scale(1.02); }
+        .disclaimer-overlay { display: none; }
 
         .sidebar-toggle {
             position: fixed; left: 0; top: 50%; transform: translateY(-50%);
@@ -139,22 +117,49 @@
         .sidebar-toggle:hover { opacity: 1; width: 10px; background: var(--footer-link); }
         .sidebar-toggle.active { opacity: 0; pointer-events: none; }
         .sidebar {
-            position: fixed; left: -120px; top: 0; bottom: 0;
-            width: 120px; display: flex; flex-direction: column;
+            position: fixed; left: -160px; top: 0; bottom: 0;
+            width: 160px; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            padding: 1.5rem 0.5rem; gap: 2rem;
+            padding: 1.5rem 0.8rem; gap: 1.8rem;
             border-right: 1px solid var(--sidebar-border);
             z-index: 20; background: var(--bg);
             transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+            overflow: visible;
         }
         .sidebar.open { left: 0; }
         .sidebar-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; justify-content: center; }
-        .sidebar-dots { display: flex; gap: 5px; opacity: 0.3; margin-top: auto; margin-bottom: 1rem; }
+        .sidebar-dots { display: flex; gap: 5px; opacity: 0.3; margin-bottom: 0.5rem; }
         .sidebar-dots span { width: 3px; height: 3px; border-radius: 50%; background: var(--text-muted); }
-        .sidebar-label { font-size: 0.55rem; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: -1.2rem; }
+        .sidebar-label { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: -1.4rem; transition: color 0.3s ease; }
         .toggle-track { width: 52px; height: 28px; background: var(--toggle-track); border-radius: 14px; cursor: pointer; position: relative; transition: background 0.3s ease; display: flex; align-items: center; }
         .toggle-thumb { position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; left: 3px; top: 3px; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; }
         .light-theme .toggle-thumb { transform: translateX(24px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+        /* Предупреждение */
+        .warn-wrapper {
+            margin-top: auto;
+            display: flex; flex-direction: column; align-items: center; gap: 1rem;
+        }
+        .warn-icon {
+            font-size: 1.1rem; cursor: pointer; opacity: 0.5; transition: opacity 0.2s;
+            line-height: 1; display: block; position: relative; z-index: 1;
+        }
+        .warn-icon:hover, .warn-icon.active { opacity: 1; }
+
+        /* Всплывашка — position: fixed на body */
+        .warn-bubble {
+            position: fixed;
+            background: var(--warn-bg); border: 1px solid var(--warn-border);
+            border-radius: 0.8rem; padding: 0.9rem 1.1rem;
+            width: 260px; max-width: calc(100vw - 2rem);
+            font-size: 0.7rem; color: var(--text-secondary); line-height: 1.6;
+            letter-spacing: 0.02em; text-align: left;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+            z-index: 100; box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+            word-wrap: break-word;
+        }
+        .warn-bubble strong { color: var(--text); }
+        .warn-bubble.visible { opacity: 1; pointer-events: auto; }
 
         .page-content {
             flex: 1 0 auto; display: flex; flex-direction: column; align-items: center;
@@ -168,17 +173,17 @@
             text-align: center; gap: 3rem;
         }
 
-        .technique-selector { display: flex; gap: 0.35rem; width: 100%; }
+        .technique-selector { display: flex; gap: 0.4rem; width: 100%; }
         .technique-btn {
-            flex: 1; padding: 0.6rem 0.5rem; border-radius: 2.5rem; border: 1px solid var(--inactive-border);
+            flex: 1; padding: 0.75rem 0.6rem; border-radius: 2.5rem; border: 1px solid var(--inactive-border);
             background: transparent; color: var(--text-dim);
-            font-family: inherit; font-size: 0.72rem; font-weight: 500;
+            font-family: inherit; font-size: 0.85rem; font-weight: 500;
             letter-spacing: 0.04em; cursor: pointer;
             transition: all 0.3s ease; white-space: nowrap;
-            display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.2;
+            display: flex; flex-direction: column; align-items: center; gap: 3px; line-height: 1.2;
         }
-        .technique-btn .tech-name { font-weight: 600; font-size: 0.72rem; }
-        .technique-btn .tech-pattern { font-size: 0.55rem; opacity: 0.6; letter-spacing: 0.06em; }
+        .technique-btn .tech-name { font-weight: 600; font-size: 0.85rem; }
+        .technique-btn .tech-pattern { font-size: 0.65rem; opacity: 0.6; letter-spacing: 0.06em; }
         .technique-btn.active .tech-pattern { opacity: 0.9; }
         .technique-btn:hover:not(.active) { color: #aaa; border-color: var(--btn-border); }
         .technique-btn.active { border-color: transparent; }
@@ -201,40 +206,40 @@
         .breath-ring {
             position: absolute; inset: 0; border-radius: 50%;
             pointer-events: none; z-index: 3;
-            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
-            mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
         }
         .breath-circle-inner {
             position: relative; z-index: 4;
-            display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
             pointer-events: none;
         }
         .breath-timer {
-            font-size: 4rem; font-weight: 350; letter-spacing: -0.02em;
+            font-size: 5rem; font-weight: 350; letter-spacing: -0.02em;
             color: var(--number-color); line-height: 1;
             font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
             font-family: 'Inter', 'SF Mono', 'JetBrains Mono', monospace; order: 1;
         }
         .breath-phase {
-            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.35em;
+            font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.35em;
             color: var(--label-color); font-weight: 500; transition: color 0.3s ease; order: 2;
         }
         .breath-cycle {
-            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.3em;
             color: var(--text-muted);
             font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
             font-family: 'Inter', 'SF Mono', 'JetBrains Mono', monospace; order: 3;
         }
         .breath-hint {
-            font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.25em;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.25em;
             color: var(--text-muted); opacity: 0.5; order: 4;
         }
 
         .instruction {
-            font-size: 0.8rem; color: var(--text-muted);
-            letter-spacing: 0.04em; line-height: 1.8; max-width: 500px; opacity: 0.7;
+            font-size: 0.95rem; color: var(--text-muted);
+            letter-spacing: 0.04em; line-height: 1.8; max-width: 540px; opacity: 0.75;
         }
-        .instruction .tech-title { font-weight: 600; display: block; margin-bottom: 6px; font-size: 0.85rem; }
+        .instruction .tech-title { font-weight: 600; display: block; margin-bottom: 8px; font-size: 1rem; }
         .instruction .tech-title.relax-color { color: var(--color-relax); }
         .instruction .tech-title.focus-color { color: var(--color-focus); }
         .instruction .tech-title.calm-color { color: var(--color-calm); }
@@ -243,7 +248,7 @@
         .footer {
             flex-shrink: 0; width: 100%; display: flex; flex-direction: column;
             align-items: center; gap: 0.7rem; color: var(--footer-text);
-            font-size: 0.7rem; letter-spacing: 0.15em;
+            font-size: 0.75rem; letter-spacing: 0.15em;
             padding: 1.8rem 1rem 1.2rem; background: transparent;
             border-top: 1px solid var(--footer-border); margin-top: auto;
             transition: color 0.5s ease, border-color 0.5s ease;
@@ -258,33 +263,20 @@
             .page-content { padding-top: clamp(4rem, 14vh, 8rem); }
             .container { gap: 2.5rem; }
             .breath-circle-container { width: 240px; height: 240px; margin: 1.5rem auto 0; }
-            .breath-timer { font-size: 3.2rem; }
-            .instruction { font-size: 0.72rem; max-width: 100%; }
-            .instruction .tech-title { font-size: 0.78rem; }
+            .breath-timer { font-size: 4rem; }
+            .breath-phase { font-size: 0.85rem; }
+            .breath-cycle { font-size: 0.7rem; }
+            .instruction { font-size: 0.85rem; max-width: 100%; }
+            .instruction .tech-title { font-size: 0.9rem; }
             .technique-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
-            .technique-btn { padding: 0.5rem 0.6rem; }
-            .technique-btn .tech-name { font-size: 0.62rem; }
-            .technique-btn .tech-pattern { font-size: 0.48rem; }
-            .disclaimer-modal { padding: 1.5rem; }
-            .disclaimer-text { font-size: 0.7rem; }
-            .footer .links { gap: 1.2rem; font-size: 0.65rem; }
+            .technique-btn { padding: 0.6rem 0.7rem; }
+            .technique-btn .tech-name { font-size: 0.72rem; }
+            .technique-btn .tech-pattern { font-size: 0.55rem; }
+            .footer .links { gap: 1.2rem; font-size: 0.7rem; }
         }
     </style>
 </head>
 <body>
-    <div class="disclaimer-overlay" id="disclaimerOverlay">
-        <div class="disclaimer-modal">
-            <div class="disclaimer-icon">⚠️</div>
-            <div class="disclaimer-title">Важно</div>
-            <div class="disclaimer-text">
-                <p>Практики выполняются <strong>только в положении сидя или лёжа</strong>, в безопасной обстановке.</p>
-                <p style="margin-top:0.5rem;">Не практикуйте <strong>за рулём</strong>, во время управления техникой, в воде или в других ситуациях, где потеря сознания может привести к травме.</p>
-                <p style="margin-top:0.5rem;">Дыхательные техники влияют на уровень кислорода в крови. Если вы новичок — начните с <strong>«Расслабления»</strong>. При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме.</p>
-            </div>
-            <button class="disclaimer-btn" id="disclaimerBtn">Принимаю</button>
-        </div>
-    </div>
-
     <button class="sidebar-toggle" id="sidebarToggle" title="Меню"></button>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-label">Тема</div>
@@ -293,7 +285,18 @@
                 <div class="toggle-thumb"><span id="toggleIcon">🌙</span></div>
             </div>
         </div>
-        <div class="sidebar-dots"><span></span><span></span><span></span></div>
+        <div class="warn-wrapper">
+            <span class="warn-icon" id="warnIcon">⚠️</span>
+            <div class="sidebar-dots"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <!-- Всплывашка на уровне body -->
+    <div class="warn-bubble" id="warnBubble">
+        <strong>Практики выполняются только в положении сидя или лёжа,</strong> в безопасной обстановке.<br><br>
+        <strong>Не практикуйте за рулём,</strong> во время управления техникой, в воде или в других ситуациях, где потеря сознания может привести к травме.<br><br>
+        Дыхательные техники влияют на уровень кислорода в крови. Если вы новичок — начните с <strong>«Расслабления»</strong>.<br><br>
+        При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме.
     </div>
 
     <div class="page-content">
@@ -343,14 +346,64 @@
 
     <script>
         (function() {
-            const DISCLAIMER_KEY = 'breath-disclaimer-accepted';
-            const overlay = document.getElementById('disclaimerOverlay');
-            const btn = document.getElementById('disclaimerBtn');
-            if (localStorage.getItem(DISCLAIMER_KEY)) overlay.classList.add('hidden');
-            btn.addEventListener('click', () => { localStorage.setItem(DISCLAIMER_KEY, '1'); overlay.classList.add('hidden'); });
-        })();
+            // ============ ВСПЛЫВАШКА С ПОЗИЦИОНИРОВАНИЕМ ============
+            const warnIcon = document.getElementById('warnIcon');
+            const warnBubble = document.getElementById('warnBubble');
+            let bubbleVisible = false;
 
-        (function() {
+            function positionBubble() {
+                const iconRect = warnIcon.getBoundingClientRect();
+                const bubbleW = warnBubble.offsetWidth;
+                const bubbleH = warnBubble.offsetHeight;
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+
+                let left, top;
+
+                // Горизонталь: справа от иконки, если есть место, иначе слева
+                if (iconRect.right + bubbleW + 16 < vw) {
+                    left = iconRect.right + 16;
+                } else {
+                    left = Math.max(8, iconRect.left - bubbleW - 16);
+                }
+
+                // Вертикаль: по центру иконки, но не выходим за экран
+                top = iconRect.top + iconRect.height / 2 - bubbleH / 2;
+                if (top < 8) top = 8;
+                if (top + bubbleH > vh - 8) top = vh - bubbleH - 8;
+
+                warnBubble.style.left = left + 'px';
+                warnBubble.style.top = top + 'px';
+            }
+
+            function showBubble() {
+                positionBubble();
+                warnBubble.classList.add('visible');
+                warnIcon.classList.add('active');
+                bubbleVisible = true;
+            }
+
+            function hideBubble() {
+                warnBubble.classList.remove('visible');
+                warnIcon.classList.remove('active');
+                bubbleVisible = false;
+            }
+
+            warnIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (bubbleVisible) { hideBubble(); } else { showBubble(); }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (bubbleVisible && !warnIcon.contains(e.target) && !warnBubble.contains(e.target)) {
+                    hideBubble();
+                }
+            });
+
+            window.addEventListener('resize', () => { if (bubbleVisible) positionBubble(); });
+            window.addEventListener('scroll', () => { if (bubbleVisible) positionBubble(); });
+
+            // ============ ОСНОВНОЙ КОД ============
             const SCALE_MIN = 0.88;
             const SCALE_MAX = 1.12;
             const SCALE_BASE = 1.0;
@@ -543,13 +596,10 @@
                 if (isWimHof()) {
                     let alpha;
                     if (wimhofPhase === 'active') {
-                        // Привязано к фазе вдоха/выдоха
                         alpha = wimhofIsInhale ? progress * 0.7 : (1 - progress) * 0.7;
                     } else if (wimhofPhase === 'hold') {
-                        // Задержка — статика на полуяркости
                         alpha = 0.5;
                     } else {
-                        // Остальные фазы — по прогрессу
                         alpha = 0.3 + progress * 0.4;
                     }
                     alpha = Math.round(alpha * 100) / 100;
