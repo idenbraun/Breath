@@ -106,7 +106,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             min-height: 100vh;
             min-height: 100dvh;
             margin: 0;
@@ -275,7 +275,7 @@
             justify-content: flex-start;
             width: 100%;
             padding-top: clamp(5rem, 17vh, 10rem);
-            padding-bottom: 3rem;
+            padding-bottom: 4rem;
         }
 
         .container {
@@ -358,7 +358,6 @@
             transition: background 0.3s ease;
         }
 
-        /* Пульсация кольца только в самом начале (класс idle-first) */
         .breath-circle-container.idle-first .breath-ring {
             animation: ringPulse 3s ease-in-out infinite;
         }
@@ -381,24 +380,15 @@
             padding: 0 0.3rem;
         }
 
-        /* Стартовый экран: паттерн + Начать */
-        .breath-pattern-label {
-            font-size: 1.1rem;
-            font-weight: 500;
-            letter-spacing: 0.08em;
-            color: var(--text-dim);
-            font-family: 'Inter', 'SF Mono', 'JetBrains Mono', monospace;
-        }
-
         .breath-start-hint {
-            font-size: 0.85rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
-            letter-spacing: 0.25em;
-            color: var(--text-muted);
-            font-weight: 400;
+            color: var(--text);
+            opacity: 0.9;
         }
 
-        /* По умолчанию: таймер/фаза скрыты, паттерн/начать видны */
         .breath-timer,
         .breath-phase,
         .breath-cycle,
@@ -406,8 +396,6 @@
             display: none;
         }
 
-        /* В активном режиме: скрываем паттерн/начать, показываем таймер/фазу */
-        .breath-circle-container:not(.idle-first):not(.idle) .breath-pattern-label,
         .breath-circle-container:not(.idle-first):not(.idle) .breath-start-hint {
             display: none;
         }
@@ -419,8 +407,6 @@
             display: block;
         }
 
-        /* Пауза — показываем таймер/фазу (как в активном), но без анимации */
-        .breath-circle-container.idle .breath-pattern-label,
         .breath-circle-container.idle .breath-start-hint {
             display: none;
         }
@@ -494,9 +480,6 @@
             line-height: 1.8;
             max-width: 540px;
             opacity: 0.75;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
             padding: 0 0.5rem;
         }
         .instruction .tech-title {
@@ -509,6 +492,11 @@
         .instruction .tech-title.focus-color { color: var(--color-focus); }
         .instruction .tech-title.calm-color { color: var(--color-calm); }
         .instruction .tech-title.wimhof-color { color: var(--color-wimhof); }
+
+        .spacer {
+            flex: 1 0 auto;
+            min-height: 2rem;
+        }
 
         .footer {
             flex-shrink: 0;
@@ -523,7 +511,6 @@
             padding: 1.8rem 1rem 1.2rem;
             background: transparent;
             border-top: 1px solid var(--footer-border);
-            margin-top: auto;
             transition: color 0.5s ease, border-color 0.5s ease;
         }
         .footer .links {
@@ -541,7 +528,6 @@
             padding-bottom: 2px;
         }
         .footer a:hover { color: var(--footer-link-hover); border-bottom-color: #444; }
-        .footer .year { color: var(--footer-text); margin-top: 0.1rem; transition: color 0.5s ease; }
 
         @media (max-width: 600px) {
             body {
@@ -555,7 +541,10 @@
                 padding-bottom: 3rem;
             }
 
-            .container { gap: 2rem; }
+            .container {
+                max-width: 100%;
+                gap: 2rem;
+            }
 
             .breath-circle-container {
                 width: 220px;
@@ -568,8 +557,7 @@
                 gap: 0.3rem;
             }
 
-            .breath-pattern-label { font-size: 0.9rem; }
-            .breath-start-hint { font-size: 0.7rem; }
+            .breath-start-hint { font-size: 0.95rem; }
 
             .breath-timer { font-size: 3.2rem; }
 
@@ -612,8 +600,7 @@
 
             .breath-circle-inner { max-width: 75%; }
 
-            .breath-pattern-label { font-size: 0.8rem; }
-            .breath-start-hint { font-size: 0.65rem; }
+            .breath-start-hint { font-size: 0.85rem; }
 
             .breath-timer { font-size: 2.8rem; }
 
@@ -673,8 +660,7 @@
                 <div class="breath-circle" id="breathCircle">
                     <div class="breath-ring" id="breathRing"></div>
                     <div class="breath-circle-inner">
-                        <div class="breath-pattern-label" id="breathPatternLabel">4-7-8</div>
-                        <div class="breath-start-hint">Начать</div>
+                        <div class="breath-start-hint">Начать практику</div>
                         <div class="breath-timer" id="breathTimer">4</div>
                         <div class="breath-phase" id="breathPhase">Вдох</div>
                         <div class="breath-cycle" id="breathCycle">Цикл 0</div>
@@ -690,18 +676,18 @@
         </div>
     </div>
 
+    <div class="spacer"></div>
+
     <div class="footer">
         <div class="links">
             <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
             <a href="https://t.me/idendie" target="_blank" rel="noopener">t.me/idendie</a>
             <a href="mailto:idenbraun@yandex.ru">idenbraun@yandex.ru</a>
         </div>
-        <div class="year">© 2026</div>
     </div>
 
     <script>
         (function() {
-            // ============ ВСПЛЫВАШКА С ПОЗИЦИОНИРОВАНИЕМ ============
             const warnIcon = document.getElementById('warnIcon');
             const warnBubble = document.getElementById('warnBubble');
             let bubbleVisible = false;
@@ -756,7 +742,6 @@
             window.addEventListener('resize', () => { if (bubbleVisible) positionBubble(); });
             window.addEventListener('scroll', () => { if (bubbleVisible) positionBubble(); });
 
-            // ============ ОСНОВНОЙ КОД ============
             const SCALE_MIN = 0.88;
             const SCALE_MAX = 1.12;
             const SCALE_BASE = 1.0;
@@ -781,7 +766,6 @@
                     title: 'Расслабление',
                     titleClass: 'relax-color',
                     instruction: 'Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну',
-                    pattern: '4-7-8',
                     expandDuration: 4,
                     holdDuration: 7,
                     contractDuration: 8,
@@ -795,7 +779,6 @@
                     title: 'Концентрация',
                     titleClass: 'focus-color',
                     instruction: 'Вдох 4с, задержка 4с, выдох 4с, задержка 4с<br>Для фокуса и ментальной ясности',
-                    pattern: '4×4',
                     expandDuration: 4,
                     holdDuration: 4,
                     contractDuration: 8,
@@ -809,8 +792,7 @@
                 calm: {
                     title: 'Успокоение',
                     titleClass: 'calm-color',
-                    instruction: 'Два коротких вдоха через нос,<br>длинный выдох через рот<br>Для быстрого снятия стресса и тревоги',
-                    pattern: '2-2-8',
+                    instruction: 'Два коротких вдоха через нос, длинный выдох через рот<br>Для быстрого снятия стресса и тревоги',
                     expandDuration: 4,
                     holdDuration: 0,
                     contractDuration: 8,
@@ -824,7 +806,6 @@
                     title: 'Бодрость',
                     titleClass: 'wimhof-color',
                     instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с, вдох и задержка 15с, выдох 5с<br>Для бодрости и прилива энергии',
-                    pattern: 'Вим Хоф',
                     isWimHof: true,
                     activeCycles: 30,
                     cycleDuration: 3,
@@ -845,7 +826,7 @@
             let wimhofActiveCount = 0, wimhofLastToggle = 0, wimhofIsInhale = true;
             let animationId = null;
             let lastTimestamp = 0;
-            let isFirstStart = true; // первый запуск или после смены техники
+            let isFirstStart = true;
 
             const breathCircleContainer = document.getElementById('breathCircleContainer');
             const breathCircle = document.getElementById('breathCircle');
@@ -854,7 +835,6 @@
             const breathTimer = document.getElementById('breathTimer');
             const breathCycle = document.getElementById('breathCycle');
             const breathHint = document.getElementById('breathHint');
-            const breathPatternLabel = document.getElementById('breathPatternLabel');
             const instruction = document.getElementById('instruction');
             const techniqueBtns = document.querySelectorAll('.technique-btn');
 
@@ -1035,7 +1015,6 @@
                     breathCircle.style.transform = `scale(${getCircleScale().toFixed(3)})`;
 
                 } else if (!isFirstStart) {
-                    // Пауза — показываем как было раньше
                     breathTimer.textContent = '';
                     breathPhase.textContent = 'Пауза';
                     breathCycle.textContent = 'Цикл ' + sessionCycles;
@@ -1145,7 +1124,6 @@
 
                 const tech = getTechnique();
                 instruction.innerHTML = `<span class="tech-title ${tech.titleClass}">${tech.title}</span>${tech.instruction}`;
-                breathPatternLabel.textContent = tech.pattern;
 
                 breathCircleContainer.classList.remove('idle');
                 breathCircleContainer.classList.add('idle-first');
@@ -1167,7 +1145,6 @@
                 }
             });
 
-            // Sidebar и тема
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const themeToggle = document.getElementById('themeToggle');
@@ -1204,10 +1181,8 @@
                 localStorage.setItem('breath-theme', isLight ? 'dark' : 'light');
             });
 
-            // Инициализация
             const initTech = TECHNIQUES.relax;
             instruction.innerHTML = `<span class="tech-title ${initTech.titleClass}">${initTech.title}</span>${initTech.instruction}`;
-            breathPatternLabel.textContent = initTech.pattern;
         })();
     </script>
 </body>
