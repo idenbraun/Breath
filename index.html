@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Цикл</title>
+    <title>Breath</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -275,7 +275,7 @@
             justify-content: flex-start;
             width: 100%;
             padding-top: clamp(5rem, 17vh, 10rem);
-            padding-bottom: 2rem;
+            padding-bottom: 3rem;
         }
 
         .container {
@@ -344,6 +344,7 @@
             align-items: center;
             justify-content: center;
             z-index: 2;
+            transition: box-shadow 0.4s ease, transform 0.15s ease;
         }
 
         .breath-ring {
@@ -354,6 +355,17 @@
             z-index: 3;
             -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
             mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+            transition: background 0.3s ease;
+        }
+
+        /* Пульсация кольца только в самом начале (класс idle-first) */
+        .breath-circle-container.idle-first .breath-ring {
+            animation: ringPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
         }
 
         .breath-circle-inner {
@@ -362,11 +374,62 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             pointer-events: none;
             max-width: 80%;
             text-align: center;
             padding: 0 0.3rem;
+        }
+
+        /* Стартовый экран: паттерн + Начать */
+        .breath-pattern-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            font-family: 'Inter', 'SF Mono', 'JetBrains Mono', monospace;
+        }
+
+        .breath-start-hint {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* По умолчанию: таймер/фаза скрыты, паттерн/начать видны */
+        .breath-timer,
+        .breath-phase,
+        .breath-cycle,
+        .breath-hint {
+            display: none;
+        }
+
+        /* В активном режиме: скрываем паттерн/начать, показываем таймер/фазу */
+        .breath-circle-container:not(.idle-first):not(.idle) .breath-pattern-label,
+        .breath-circle-container:not(.idle-first):not(.idle) .breath-start-hint {
+            display: none;
+        }
+
+        .breath-circle-container:not(.idle-first):not(.idle) .breath-timer,
+        .breath-circle-container:not(.idle-first):not(.idle) .breath-phase,
+        .breath-circle-container:not(.idle-first):not(.idle) .breath-cycle,
+        .breath-circle-container:not(.idle-first):not(.idle) .breath-hint {
+            display: block;
+        }
+
+        /* Пауза — показываем таймер/фазу (как в активном), но без анимации */
+        .breath-circle-container.idle .breath-pattern-label,
+        .breath-circle-container.idle .breath-start-hint {
+            display: none;
+        }
+
+        .breath-circle-container.idle .breath-timer,
+        .breath-circle-container.idle .breath-phase,
+        .breath-circle-container.idle .breath-cycle,
+        .breath-circle-container.idle .breath-hint {
+            display: block;
         }
 
         .breath-timer {
@@ -489,7 +552,7 @@
 
             .page-content {
                 padding-top: clamp(3rem, 12vh, 6rem);
-                padding-bottom: 1rem;
+                padding-bottom: 3rem;
             }
 
             .container { gap: 2rem; }
@@ -504,6 +567,9 @@
                 max-width: 80%;
                 gap: 0.3rem;
             }
+
+            .breath-pattern-label { font-size: 0.9rem; }
+            .breath-start-hint { font-size: 0.7rem; }
 
             .breath-timer { font-size: 3.2rem; }
 
@@ -545,6 +611,9 @@
             }
 
             .breath-circle-inner { max-width: 75%; }
+
+            .breath-pattern-label { font-size: 0.8rem; }
+            .breath-start-hint { font-size: 0.65rem; }
 
             .breath-timer { font-size: 2.8rem; }
 
@@ -600,10 +669,12 @@
                 </button>
             </div>
 
-            <div class="breath-circle-container" id="breathCircleContainer">
+            <div class="breath-circle-container idle-first" id="breathCircleContainer">
                 <div class="breath-circle" id="breathCircle">
                     <div class="breath-ring" id="breathRing"></div>
                     <div class="breath-circle-inner">
+                        <div class="breath-pattern-label" id="breathPatternLabel">4-7-8</div>
+                        <div class="breath-start-hint">Начать</div>
                         <div class="breath-timer" id="breathTimer">4</div>
                         <div class="breath-phase" id="breathPhase">Вдох</div>
                         <div class="breath-cycle" id="breathCycle">Цикл 0</div>
@@ -707,9 +778,13 @@
 
             const TECHNIQUES = {
                 relax: {
-                    title: 'Расслабление', titleClass: 'relax-color',
+                    title: 'Расслабление',
+                    titleClass: 'relax-color',
                     instruction: 'Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну',
-                    expandDuration: 4, holdDuration: 7, contractDuration: 8,
+                    pattern: '4-7-8',
+                    expandDuration: 4,
+                    holdDuration: 7,
+                    contractDuration: 8,
                     phases: [
                         { name: 'Вдох', duration: 4, isHold: false, fillDir: 'up' },
                         { name: 'Задержка', duration: 7, isHold: true, fillDir: 'hold' },
@@ -717,9 +792,13 @@
                     ]
                 },
                 focus: {
-                    title: 'Концентрация', titleClass: 'focus-color',
+                    title: 'Концентрация',
+                    titleClass: 'focus-color',
                     instruction: 'Вдох 4с, задержка 4с, выдох 4с, задержка 4с<br>Для фокуса и ментальной ясности',
-                    expandDuration: 4, holdDuration: 4, contractDuration: 8,
+                    pattern: '4×4',
+                    expandDuration: 4,
+                    holdDuration: 4,
+                    contractDuration: 8,
                     phases: [
                         { name: 'Вдох', duration: 4, isHold: false, fillDir: 'up' },
                         { name: 'Задержка', duration: 4, isHold: true, fillDir: 'hold' },
@@ -728,9 +807,13 @@
                     ]
                 },
                 calm: {
-                    title: 'Успокоение', titleClass: 'calm-color',
-                    instruction: 'Два коротких вдоха через нос, длинный выдох через рот<br>Для быстрого снятия стресса и тревоги',
-                    expandDuration: 4, holdDuration: 0, contractDuration: 8,
+                    title: 'Успокоение',
+                    titleClass: 'calm-color',
+                    instruction: 'Два коротких вдоха через нос,<br>длинный выдох через рот<br>Для быстрого снятия стресса и тревоги',
+                    pattern: '2-2-8',
+                    expandDuration: 4,
+                    holdDuration: 0,
+                    contractDuration: 8,
                     phases: [
                         { name: 'Вдох', duration: 2, isHold: false, fillDir: 'up' },
                         { name: 'Довдох', duration: 2, isHold: false, fillDir: 'up' },
@@ -738,10 +821,13 @@
                     ]
                 },
                 wimhof: {
-                    title: 'Бодрость', titleClass: 'wimhof-color',
-                    instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с,<br>вдох и задержка 15с, выдох 5с<br>Для бодрости и прилива энергии',
+                    title: 'Бодрость',
+                    titleClass: 'wimhof-color',
+                    instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с, вдох и задержка 15с, выдох 5с<br>Для бодрости и прилива энергии',
+                    pattern: 'Вим Хоф',
                     isWimHof: true,
-                    activeCycles: 30, cycleDuration: 3,
+                    activeCycles: 30,
+                    cycleDuration: 3,
                     phases: [
                         { name: 'Активное дыхание', duration: 90, isHold: false, fillDir: 'up', wimhofPhase: 'active' },
                         { name: 'Задержка', duration: 60, isHold: true, fillDir: 'hold', wimhofPhase: 'hold' },
@@ -759,6 +845,7 @@
             let wimhofActiveCount = 0, wimhofLastToggle = 0, wimhofIsInhale = true;
             let animationId = null;
             let lastTimestamp = 0;
+            let isFirstStart = true; // первый запуск или после смены техники
 
             const breathCircleContainer = document.getElementById('breathCircleContainer');
             const breathCircle = document.getElementById('breathCircle');
@@ -767,6 +854,7 @@
             const breathTimer = document.getElementById('breathTimer');
             const breathCycle = document.getElementById('breathCycle');
             const breathHint = document.getElementById('breathHint');
+            const breathPatternLabel = document.getElementById('breathPatternLabel');
             const instruction = document.getElementById('instruction');
             const techniqueBtns = document.querySelectorAll('.technique-btn');
 
@@ -860,7 +948,10 @@
                     breathRing.style.background = `conic-gradient(from 0deg, transparent ${gap}deg, ${color} ${gap}deg, ${color} ${360 - gap}deg, transparent ${360 - gap}deg)`;
                     return;
                 }
-                if (fillDir === 'hold' || isHold) { breathRing.style.background = `conic-gradient(${ringColor} 0deg, ${ringColor} 360deg)`; return; }
+                if (fillDir === 'hold' || isHold) {
+                    breathRing.style.background = `conic-gradient(${ringColor} 0deg, ${ringColor} 360deg)`;
+                    return;
+                }
                 const angle = progress * 360;
                 if (fillDir === 'up') {
                     const half = angle / 2;
@@ -898,7 +989,7 @@
             function updateDisplay() {
                 const tech = getTechnique();
                 const phase = getCurrentPhase();
-                let displayTimer, displayPhase, progress, wimhofOverride;
+                let displayTimer, displayPhase, progress, wimhofPhase, wimhofOverride;
 
                 if (isPlaying) {
                     if (tech.isWimHof && phase.wimhofPhase === 'active') {
@@ -906,47 +997,49 @@
                         displayPhase = wimhofIsInhale ? 'Вдох' : 'Выдох';
                         const halfCycle = tech.cycleDuration / 2;
                         progress = Math.min(1, (timeInPhase - wimhofLastToggle) / halfCycle);
+                        wimhofPhase = 'active';
                         wimhofOverride = 'active';
                     } else if (tech.isWimHof && phase.wimhofPhase === 'hold') {
                         displayTimer = Math.ceil(timeInPhase);
                         displayPhase = 'Задержка';
                         progress = Math.min(1, timeInPhase / 60);
+                        wimhofPhase = 'hold';
                         wimhofOverride = 'hold';
                     } else if (tech.isWimHof && phase.wimhofPhase === 'inhaleHold') {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
                         displayPhase = timeInPhase < WH_INHALE_FILL ? 'Вдох' : 'Задержка';
                         progress = Math.min(1, timeInPhase / WH_INHALE_FILL);
+                        wimhofPhase = 'inhaleHold';
                         wimhofOverride = 'inhaleHold';
                     } else if (tech.isWimHof && phase.wimhofPhase === 'exhaleEnd') {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
                         displayPhase = 'Выдох';
                         progress = Math.min(1, timeInPhase / phase.duration);
+                        wimhofPhase = 'exhaleEnd';
                         wimhofOverride = 'exhaleEnd';
                     } else {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
                         displayPhase = phase.name;
                         progress = Math.min(1, timeInPhase / phase.duration);
+                        wimhofPhase = null;
                         wimhofOverride = null;
                     }
-                } else {
-                    displayTimer = tech.isWimHof ? '0/30' : tech.phases[0].duration;
-                    displayPhase = tech.isWimHof ? 'Активное дыхание' : 'Вдох';
-                    progress = 0;
-                    wimhofOverride = null;
-                }
-                breathTimer.textContent = displayTimer;
-                breathPhase.textContent = displayPhase;
-                breathCycle.textContent = 'Цикл ' + sessionCycles;
-                breathHint.textContent = isPlaying ? '' : 'Нажми, чтобы начать';
-                if (isPlaying) {
-                    const wimhofPhase = tech.isWimHof ? phase.wimhofPhase : null;
+
+                    breathTimer.textContent = displayTimer;
+                    breathPhase.textContent = displayPhase;
+                    breathCycle.textContent = 'Цикл ' + sessionCycles;
+                    breathHint.textContent = '';
+
                     drawRing(progress, phase.fillDir, phase.isHold, wimhofOverride);
                     updateGlow(progress, phase.isHold, wimhofPhase);
                     breathCircle.style.transform = `scale(${getCircleScale().toFixed(3)})`;
-                } else {
-                    breathCircle.style.transform = `scale(${SCALE_BASE})`;
-                    breathCircle.style.boxShadow = 'none';
-                    breathRing.style.background = 'transparent';
+
+                } else if (!isFirstStart) {
+                    // Пауза — показываем как было раньше
+                    breathTimer.textContent = '';
+                    breathPhase.textContent = 'Пауза';
+                    breathCycle.textContent = 'Цикл ' + sessionCycles;
+                    breathHint.textContent = 'Нажми, чтобы продолжить';
                 }
             }
 
@@ -972,7 +1065,12 @@
                         wimhofLastToggle = timeInPhase;
                         wimhofIsInhale = !wimhofIsInhale;
                         if (!wimhofIsInhale) wimhofActiveCount++;
-                        if (wimhofActiveCount >= tech.activeCycles) { advanceToNextPhase(); updateDisplay(); animationId = requestAnimationFrame(tick); return; }
+                        if (wimhofActiveCount >= tech.activeCycles) {
+                            advanceToNextPhase();
+                            updateDisplay();
+                            animationId = requestAnimationFrame(tick);
+                            return;
+                        }
                     }
                 } else if (timeInPhase >= phase.duration) {
                     advanceToNextPhase();
@@ -982,65 +1080,134 @@
             }
 
             function startBreathing() {
-                isPlaying = true; lastTimestamp = 0; timeInPhase = 0; phaseIndex = 0; sessionCycles = 0;
-                wimhofActiveCount = 0; wimhofLastToggle = 0; wimhofIsInhale = true;
-                updateDisplay(); animationId = requestAnimationFrame(tick);
-            }
-            function resumeBreathing() { isPlaying = true; lastTimestamp = 0; updateDisplay(); animationId = requestAnimationFrame(tick); }
-            function pauseBreathing() {
-                isPlaying = false; if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+                isPlaying = true;
+                isFirstStart = false;
+                lastTimestamp = 0;
+                timeInPhase = 0;
+                phaseIndex = 0;
+                sessionCycles = 0;
+                wimhofActiveCount = 0;
+                wimhofLastToggle = 0;
+                wimhofIsInhale = true;
+                breathCircleContainer.classList.remove('idle-first', 'idle');
                 breathCircle.style.transform = `scale(${SCALE_BASE})`;
                 breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
-                breathTimer.textContent = '';
-                breathPhase.textContent = 'Пауза';
-                breathHint.textContent = 'Нажми, чтобы продолжить';
+                updateDisplay();
+                animationId = requestAnimationFrame(tick);
             }
-            function toggleBreathing() {
-                if (isPlaying) pauseBreathing();
-                else phaseIndex === 0 && timeInPhase === 0 && sessionCycles === 0 ? startBreathing() : resumeBreathing();
+
+            function resumeBreathing() {
+                isPlaying = true;
+                lastTimestamp = 0;
+                breathCircleContainer.classList.remove('idle');
+                breathCircle.style.transform = `scale(${SCALE_BASE})`;
+                breathCircle.style.boxShadow = 'none';
+                breathRing.style.background = 'transparent';
+                updateDisplay();
+                animationId = requestAnimationFrame(tick);
             }
-            function switchTechnique(technique) {
-                if (isPlaying && animationId) { cancelAnimationFrame(animationId); animationId = null; }
-                isPlaying = false; currentTechnique = technique;
-                phaseIndex = 0; timeInPhase = 0; sessionCycles = 0;
-                wimhofActiveCount = 0; wimhofLastToggle = 0; wimhofIsInhale = true;
-                techniqueBtns.forEach(b => b.classList.remove('active'));
-                document.querySelector(`[data-technique="${technique}"]`).classList.add('active');
-                const tech = getTechnique();
-                instruction.innerHTML = `<span class="tech-title ${tech.titleClass}">${tech.title}</span>${tech.instruction}`;
-                breathHint.textContent = 'Нажми, чтобы начать';
+
+            function pauseBreathing() {
+                isPlaying = false;
+                if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+                breathCircleContainer.classList.add('idle');
                 breathCircle.style.transform = `scale(${SCALE_BASE})`;
                 breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
                 updateDisplay();
             }
 
-            breathCircleContainer.addEventListener('click', toggleBreathing);
-            techniqueBtns.forEach(btn => btn.addEventListener('click', () => switchTechnique(btn.dataset.technique)));
-            document.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); toggleBreathing(); } });
+            function toggleBreathing() {
+                if (isPlaying) {
+                    pauseBreathing();
+                } else if (isFirstStart) {
+                    startBreathing();
+                } else {
+                    resumeBreathing();
+                }
+            }
 
+            function switchTechnique(technique) {
+                if (isPlaying && animationId) { cancelAnimationFrame(animationId); animationId = null; }
+                isPlaying = false;
+                isFirstStart = true;
+                currentTechnique = technique;
+                phaseIndex = 0;
+                timeInPhase = 0;
+                sessionCycles = 0;
+                wimhofActiveCount = 0;
+                wimhofLastToggle = 0;
+                wimhofIsInhale = true;
+
+                techniqueBtns.forEach(b => b.classList.remove('active'));
+                document.querySelector(`[data-technique="${technique}"]`).classList.add('active');
+
+                const tech = getTechnique();
+                instruction.innerHTML = `<span class="tech-title ${tech.titleClass}">${tech.title}</span>${tech.instruction}`;
+                breathPatternLabel.textContent = tech.pattern;
+
+                breathCircleContainer.classList.remove('idle');
+                breathCircleContainer.classList.add('idle-first');
+                breathCircle.style.transform = `scale(${SCALE_BASE})`;
+                breathCircle.style.boxShadow = 'none';
+                breathRing.style.background = 'transparent';
+            }
+
+            breathCircleContainer.addEventListener('click', toggleBreathing);
+
+            techniqueBtns.forEach(btn => {
+                btn.addEventListener('click', () => switchTechnique(btn.dataset.technique));
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && e.target === document.body) {
+                    e.preventDefault();
+                    toggleBreathing();
+                }
+            });
+
+            // Sidebar и тема
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const themeToggle = document.getElementById('themeToggle');
             const toggleIcon = document.getElementById('toggleIcon');
-            sidebarToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); sidebarToggle.classList.toggle('active'); });
-            document.addEventListener('click', (e) => { if (!sidebar.contains(e.target) && e.target !== sidebarToggle) { sidebar.classList.remove('open'); sidebarToggle.classList.remove('active'); } });
+
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                sidebarToggle.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && e.target !== sidebarToggle) {
+                    sidebar.classList.remove('open');
+                    sidebarToggle.classList.remove('active');
+                }
+            });
+
             function applyTheme(theme) {
-                if (theme === 'light') { document.body.classList.add('light-theme'); toggleIcon.textContent = '☀️'; }
-                else { document.body.classList.remove('light-theme'); toggleIcon.textContent = '🌙'; }
+                if (theme === 'light') {
+                    document.body.classList.add('light-theme');
+                    toggleIcon.textContent = '☀️';
+                } else {
+                    document.body.classList.remove('light-theme');
+                    toggleIcon.textContent = '🌙';
+                }
             }
+
             const savedTheme = localStorage.getItem('breath-theme');
             applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+
             themeToggle.addEventListener('click', () => {
                 const isLight = document.body.classList.contains('light-theme');
                 applyTheme(isLight ? 'dark' : 'light');
                 localStorage.setItem('breath-theme', isLight ? 'dark' : 'light');
             });
 
-            updateDisplay();
+            // Инициализация
             const initTech = TECHNIQUES.relax;
             instruction.innerHTML = `<span class="tech-title ${initTech.titleClass}">${initTech.title}</span>${initTech.instruction}`;
+            breathPatternLabel.textContent = initTech.pattern;
         })();
     </script>
 </body>
