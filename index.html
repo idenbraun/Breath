@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Breath — дыхательные практики</title>
     <style>
-        /* ----- CSS-переменные ----- */
+        /* ----- CSS-переменные (тёмная тема по умолчанию) ----- */
         :root {
             --bg: #0a0a0a;
             --bg-gradient: radial-gradient(circle at 50% 40%, #121212 0%, #050505 100%);
@@ -105,7 +105,7 @@
             box-sizing: border-box;
         }
 
-        /* ----- ГРАДИЕНТ НА HTML ----- */
+        /* ----- ГРАДИЕНТ НА HTML (без швов) ----- */
         html {
             height: 100%;
             min-height: 100vh;
@@ -139,7 +139,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ----- Обёртка (высота = экран + отступ) ----- */
+        /* ----- Обёртка (прозрачная) ----- */
         .app-wrapper {
             display: flex;
             flex-direction: column;
@@ -149,17 +149,15 @@
             min-height: 100vh;
             min-height: 100dvh;
             background: transparent;
-            /* Дополнительная высота, чтобы футер ушёл за экран */
-            padding-bottom: 5rem;
         }
 
-        /* ----- Контент (растягивается) ----- */
+        /* ----- Контент (расширяется, футер прижат к низу) ----- */
         .page-content {
             flex: 1 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             width: 100%;
             padding-top: clamp(2rem, 10vh, 6rem);
             padding-bottom: 2rem;
@@ -174,7 +172,7 @@
             gap: 2.5rem;
         }
 
-        /* ----- Футер (находится ниже экрана) ----- */
+        /* ----- Футер (увеличенный отступ снизу) ----- */
         .footer {
             flex-shrink: 0;
             width: 100%;
@@ -185,7 +183,7 @@
             color: var(--footer-text);
             font-size: 0.75rem;
             letter-spacing: 0.15em;
-            padding: 1.8rem 1rem 1.2rem;
+            padding: 1.8rem 1rem 3rem;
             background: transparent;
             border-top: 1px solid var(--footer-border);
             transition: color 0.5s ease, border-color 0.5s ease;
@@ -626,10 +624,6 @@
                 min-height: 100dvh;
             }
 
-            .app-wrapper {
-                padding-bottom: 4rem;
-            }
-
             .page-content {
                 padding-top: clamp(1.5rem, 8vh, 4rem);
                 padding-bottom: 1.5rem;
@@ -802,7 +796,7 @@
             </div>
         </div>
 
-        <!-- Футер с ссылками — он ниже экрана -->
+        <!-- Футер с увеличенным отступом -->
         <div class="footer">
             <div class="links">
                 <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
