@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Breath — дыхательные практики с вибрацией</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Breath — дыхательные практики</title>
     <style>
         /* ----- CSS-переменные (тёмная тема по умолчанию) ----- */
         :root {
@@ -95,13 +95,14 @@
             --warn-border: #e0d0b0;
         }
 
-        /* ----- Сброс и базовые стили ----- */
+        /* ----- Сброс ----- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* ----- Флекс-контейнер на всю высоту экрана ----- */
         html, body {
             height: 100%;
             min-height: 100vh;
@@ -119,8 +120,7 @@
             min-height: 100vh;
             min-height: 100dvh;
             margin: 0;
-            padding: 1.5rem;
-            padding-bottom: 0;
+            padding: 1.5rem 1.5rem 0 1.5rem;
             color: var(--text);
             letter-spacing: -0.01em;
             background: var(--bg-gradient);
@@ -129,7 +129,78 @@
             overflow-x: hidden;
         }
 
-        /* ----- Боковое меню (сайдбар) ----- */
+        /* ----- Основной враппер (растягивается на всю высоту) ----- */
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1 0 auto;
+            width: 100%;
+            max-width: 700px;
+            min-height: 100%;
+            min-height: 100dvh;
+        }
+
+        /* ----- Контент (расширяется, футер прижат к низу) ----- */
+        .page-content {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            padding-top: clamp(2rem, 10vh, 6rem);
+            padding-bottom: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 2.5rem;
+        }
+
+        /* ----- Футер (всегда внизу, не прыгает) ----- */
+        .footer {
+            flex-shrink: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.7rem;
+            color: var(--footer-text);
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            padding: 1.8rem 1rem 1.2rem;
+            background: transparent;
+            border-top: 1px solid var(--footer-border);
+            transition: color 0.5s ease, border-color 0.5s ease;
+            margin-top: auto;
+        }
+
+        .footer .links {
+            display: flex;
+            gap: 2.2rem;
+            flex-wrap: nowrap;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .footer a {
+            color: var(--footer-link);
+            text-decoration: none;
+            transition: color 0.25s;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+        }
+        .footer a:hover {
+            color: var(--footer-link-hover);
+            border-bottom-color: #444;
+        }
+
+        /* ----- Остальные стили ----- */
+        /* Скрытые элементы, предупреждения, круг, техники — всё как было */
         .sidebar-toggle {
             position: fixed;
             left: 0;
@@ -208,7 +279,6 @@
             transition: color 0.3s ease;
         }
 
-        /* ----- Переключатель темы ----- */
         .toggle-track {
             width: 52px;
             height: 28px;
@@ -242,7 +312,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
-        /* ----- Предупреждение (Warn) ----- */
         .warn-wrapper {
             margin-top: auto;
             display: flex;
@@ -294,29 +363,6 @@
             pointer-events: auto;
         }
 
-        /* ----- Основной контент ----- */
-        .page-content {
-            flex: 1 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-            padding-top: clamp(5rem, 17vh, 10rem);
-            padding-bottom: 4rem;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 3rem;
-        }
-
-        /* ----- Кнопки выбора техники ----- */
         .technique-selector {
             display: flex;
             gap: 0.4rem;
@@ -363,7 +409,6 @@
             border-color: transparent;
         }
 
-        /* Цвета активных кнопок */
         .technique-btn[data-technique="relax"].active {
             background: var(--color-relax-bg);
             color: var(--color-relax);
@@ -381,12 +426,11 @@
             color: var(--color-wimhof);
         }
 
-        /* ----- Дыхательный круг ----- */
         .breath-circle-container {
             position: relative;
             width: 280px;
             height: 280px;
-            margin: 2rem auto 0;
+            margin: 1rem auto 0;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
             flex-shrink: 0;
@@ -416,7 +460,6 @@
             transition: background 0.3s ease;
         }
 
-        /* Пульсация кольца в режиме ожидания */
         .breath-circle-container.idle-first .breath-ring {
             animation: ringPulse 3s ease-in-out infinite;
         }
@@ -452,7 +495,6 @@
             opacity: 0.9;
         }
 
-        /* Элементы, скрытые до старта */
         .breath-timer,
         .breath-phase,
         .breath-cycle,
@@ -537,7 +579,6 @@
             word-break: break-word;
         }
 
-        /* ----- Инструкция ----- */
         .instruction {
             font-size: 0.95rem;
             color: var(--text-muted);
@@ -566,68 +607,26 @@
             color: var(--color-wimhof);
         }
 
-        /* ----- Подвал ----- */
-        .spacer {
-            flex: 1 0 auto;
-            min-height: 2rem;
-        }
-
-        .footer {
-            flex-shrink: 0;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.7rem;
-            color: var(--footer-text);
-            font-size: 0.75rem;
-            letter-spacing: 0.15em;
-            padding: 1.8rem 1rem 1.2rem;
-            background: transparent;
-            border-top: 1px solid var(--footer-border);
-            transition: color 0.5s ease, border-color 0.5s ease;
-        }
-        .footer .links {
-            display: flex;
-            gap: 2.2rem;
-            flex-wrap: nowrap;
-            justify-content: center;
-            white-space: nowrap;
-        }
-        .footer a {
-            color: var(--footer-link);
-            text-decoration: none;
-            transition: color 0.25s;
-            border-bottom: 1px solid transparent;
-            padding-bottom: 2px;
-        }
-        .footer a:hover {
-            color: var(--footer-link-hover);
-            border-bottom-color: #444;
-        }
-
-        /* ----- Адаптив под мобильные устройства ----- */
+        /* ----- Адаптив ----- */
         @media (max-width: 600px) {
             body {
-                padding: 0.8rem;
-                padding-bottom: 0;
+                padding: 0.8rem 0.8rem 0 0.8rem;
                 min-height: 100dvh;
             }
 
             .page-content {
-                padding-top: clamp(3rem, 12vh, 6rem);
-                padding-bottom: 3rem;
+                padding-top: clamp(1.5rem, 8vh, 4rem);
+                padding-bottom: 1.5rem;
             }
 
             .container {
-                max-width: 100%;
-                gap: 2rem;
+                gap: 1.8rem;
             }
 
             .breath-circle-container {
                 width: 220px;
                 height: 220px;
-                margin: 1rem auto 0;
+                margin: 0.5rem auto 0;
             }
 
             .breath-circle-inner {
@@ -719,10 +718,8 @@
 </head>
 <body>
 
-    <!-- Кнопка открытия сайдбара -->
-    <button class="sidebar-toggle" id="sidebarToggle" title="Меню"></button>
-
     <!-- Сайдбар -->
+    <button class="sidebar-toggle" id="sidebarToggle" title="Меню"></button>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-label">Тема</div>
         <div class="sidebar-row">
@@ -736,7 +733,6 @@
         </div>
     </div>
 
-    <!-- Всплывающее предупреждение -->
     <div class="warn-bubble" id="warnBubble">
         <strong>Практики выполняются только в положении сидя или лёжа,</strong> в безопасной обстановке.<br><br>
         <strong>Не практикуйте за рулём,</strong> во время управления техникой, в воде или в других ситуациях, где потеря сознания может привести к травме.<br><br>
@@ -744,62 +740,63 @@
         При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме.
     </div>
 
-    <!-- Основной контент -->
-    <div class="page-content">
-        <div class="container">
+    <!-- НОВАЯ ОБЁРТКА для фиксации футера -->
+    <div class="app-wrapper">
 
-            <!-- Выбор техники -->
-            <div class="technique-selector" id="techniqueSelector">
-                <button class="technique-btn active" data-technique="relax">
-                    <span class="tech-name">Расслабление</span>
-                    <span class="tech-pattern">4-7-8</span>
-                </button>
-                <button class="technique-btn" data-technique="focus">
-                    <span class="tech-name">Концентрация</span>
-                    <span class="tech-pattern">4×4</span>
-                </button>
-                <button class="technique-btn" data-technique="calm">
-                    <span class="tech-name">Успокоение</span>
-                    <span class="tech-pattern">2-2-8</span>
-                </button>
-                <button class="technique-btn" data-technique="wimhof">
-                    <span class="tech-name">Бодрость</span>
-                    <span class="tech-pattern">Вим Хоф</span>
-                </button>
-            </div>
+        <div class="page-content">
+            <div class="container">
 
-            <!-- Дыхательный круг -->
-            <div class="breath-circle-container idle-first" id="breathCircleContainer">
-                <div class="breath-circle" id="breathCircle">
-                    <div class="breath-ring" id="breathRing"></div>
-                    <div class="breath-circle-inner">
-                        <div class="breath-start-hint">Начать практику</div>
-                        <div class="breath-timer" id="breathTimer">4</div>
-                        <div class="breath-phase" id="breathPhase">Вдох</div>
-                        <div class="breath-cycle" id="breathCycle">Цикл 0</div>
-                        <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
+                <div class="technique-selector" id="techniqueSelector">
+                    <button class="technique-btn active" data-technique="relax">
+                        <span class="tech-name">Расслабление</span>
+                        <span class="tech-pattern">4-7-8</span>
+                    </button>
+                    <button class="technique-btn" data-technique="focus">
+                        <span class="tech-name">Концентрация</span>
+                        <span class="tech-pattern">4×4</span>
+                    </button>
+                    <button class="technique-btn" data-technique="calm">
+                        <span class="tech-name">Успокоение</span>
+                        <span class="tech-pattern">2-2-8</span>
+                    </button>
+                    <button class="technique-btn" data-technique="wimhof">
+                        <span class="tech-name">Бодрость</span>
+                        <span class="tech-pattern">Вим Хоф</span>
+                    </button>
+                </div>
+
+                <div class="breath-circle-container idle-first" id="breathCircleContainer">
+                    <div class="breath-circle" id="breathCircle">
+                        <div class="breath-ring" id="breathRing"></div>
+                        <div class="breath-circle-inner">
+                            <div class="breath-start-hint">Начать практику</div>
+                            <div class="breath-timer" id="breathTimer">4</div>
+                            <div class="breath-phase" id="breathPhase">Вдох</div>
+                            <div class="breath-cycle" id="breathCycle">Цикл 0</div>
+                            <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Инструкция -->
-            <div class="instruction" id="instruction">
-                <span class="tech-title relax-color">Расслабление</span>
-                Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну
+                <div class="instruction" id="instruction">
+                    <span class="tech-title relax-color">Расслабление</span>
+                    Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну
+                </div>
+
             </div>
         </div>
-    </div>
 
-    <div class="spacer"></div>
-
-    <!-- Подвал -->
-    <div class="footer">
-        <div class="links">
-            <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
-            <a href="https://t.me/idendie" target="_blank" rel="noopener">t.me/idendie</a>
-            <a href="mailto:idenbraun@yandex.ru">idenbraun@yandex.ru</a>
+        <!-- Футер внутри обёртки и прижат к низу -->
+        <div class="footer">
+            <div class="links">
+                <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://t.me/idendie" target="_blank" rel="noopener">t.me/idendie</a>
+                <a href="mailto:idenbraun@yandex.ru">idenbraun@yandex.ru</a>
+            </div>
         </div>
+
     </div>
+    <!-- Конец обёртки -->
 
     <script>
         (function() {
@@ -881,7 +878,6 @@
             const WH_INHALE_FILL = 3;
             const WH_EXHALE_END = 5;
 
-            // Функция для получения цвета свечения
             function glowColor(tech, isHold) {
                 if (isHold) return 'rgba(201,168,126,ALPHA)';
                 const colors = {
@@ -893,7 +889,6 @@
                 return colors[tech] || colors.relax;
             }
 
-            // Описание техник
             const TECHNIQUES = {
                 relax: {
                     title: 'Расслабление',
@@ -954,9 +949,6 @@
                 }
             };
 
-            // ============================================================
-            // 3. СОСТОЯНИЕ ПРИЛОЖЕНИЯ
-            // ============================================================
             let currentTechnique = 'relax';
             let isPlaying = false;
             let phaseIndex = 0;
@@ -969,7 +961,6 @@
             let lastTimestamp = 0;
             let isFirstStart = true;
 
-            // DOM-элементы
             const breathCircleContainer = document.getElementById('breathCircleContainer');
             const breathCircle = document.getElementById('breathCircle');
             const breathRing = document.getElementById('breathRing');
@@ -980,9 +971,6 @@
             const instruction = document.getElementById('instruction');
             const techniqueBtns = document.querySelectorAll('.technique-btn');
 
-            // ============================================================
-            // 4. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-            // ============================================================
             function getTechnique() {
                 return TECHNIQUES[currentTechnique];
             }
@@ -1005,34 +993,24 @@
                 return elapsed;
             }
 
-            // ============================================================
-            // 5. РАСЧЁТ МАСШТАБА КРУГА
-            // ============================================================
             function getCircleScale() {
                 const tech = getTechnique();
 
-                // Для обычных техник
                 if (!tech.isWimHof) {
                     const elapsed = getElapsedInCycle();
 
-                    // Вдох — увеличиваем
                     if (elapsed <= tech.expandDuration) {
                         const progress = elapsed / tech.expandDuration;
                         return SCALE_BASE + progress * (SCALE_MAX - SCALE_BASE);
-                    }
-                    // Задержка — максимальный размер
-                    else if (elapsed <= tech.expandDuration + tech.holdDuration) {
+                    } else if (elapsed <= tech.expandDuration + tech.holdDuration) {
                         return SCALE_MAX;
-                    }
-                    // Выдох — уменьшаем
-                    else {
+                    } else {
                         const elapsedAfterHold = elapsed - tech.expandDuration - tech.holdDuration;
                         const progress = Math.min(1, elapsedAfterHold / tech.contractDuration);
                         return SCALE_MAX - progress * (SCALE_MAX - SCALE_BASE);
                     }
                 }
 
-                // Для техники Вим Хофа
                 const phase = getCurrentPhase();
 
                 if (phase.wimhofPhase === 'active') {
@@ -1068,9 +1046,6 @@
                 return SCALE_BASE;
             }
 
-            // ============================================================
-            // 6. ОТРИСОВКА КОЛЬЦА (breathRing)
-            // ============================================================
             function drawRing(progress, fillDir, isHold, wimhofOverride) {
                 const colors = {
                     relax: 'var(--color-relax)',
@@ -1082,7 +1057,6 @@
                 const holdColor = 'var(--accent-hold)';
                 const ringColor = isHold ? holdColor : color;
 
-                // Для техники Вим Хофа
                 if (wimhofOverride === 'active') {
                     const angle = progress * 360;
                     if (wimhofIsInhale) {
@@ -1125,7 +1099,6 @@
                     return;
                 }
 
-                // Обычные техники
                 if (fillDir === 'hold' || isHold) {
                     breathRing.style.background = `conic-gradient(${ringColor} 0deg, ${ringColor} 360deg)`;
                     return;
@@ -1143,9 +1116,6 @@
                 }
             }
 
-            // ============================================================
-            // 7. ОБНОВЛЕНИЕ СВЕЧЕНИЯ
-            // ============================================================
             function updateGlow(progress, isHold, wimhofPhase) {
                 const spread = window.innerWidth <= 600 ? 15 : 20;
                 const size = window.innerWidth <= 600 ? 40 : 50;
@@ -1170,16 +1140,12 @@
                 }
             }
 
-            // ============================================================
-            // 8. ОБНОВЛЕНИЕ ЭКРАНА (таймер, фаза, кольцо, масштаб)
-            // ============================================================
             function updateDisplay() {
                 const tech = getTechnique();
                 const phase = getCurrentPhase();
                 let displayTimer, displayPhase, progress, wimhofPhase, wimhofOverride;
 
                 if (isPlaying) {
-                    // ---- Вим Хоф: активное дыхание ----
                     if (tech.isWimHof && phase.wimhofPhase === 'active') {
                         displayTimer = wimhofActiveCount + '/' + tech.activeCycles;
                         displayPhase = wimhofIsInhale ? 'Вдох' : 'Выдох';
@@ -1187,33 +1153,25 @@
                         progress = Math.min(1, (timeInPhase - wimhofLastToggle) / halfCycle);
                         wimhofPhase = 'active';
                         wimhofOverride = 'active';
-                    }
-                    // ---- Вим Хоф: задержка ----
-                    else if (tech.isWimHof && phase.wimhofPhase === 'hold') {
+                    } else if (tech.isWimHof && phase.wimhofPhase === 'hold') {
                         displayTimer = Math.ceil(timeInPhase);
                         displayPhase = 'Задержка';
                         progress = Math.min(1, timeInPhase / 60);
                         wimhofPhase = 'hold';
                         wimhofOverride = 'hold';
-                    }
-                    // ---- Вим Хоф: вдох-задержка ----
-                    else if (tech.isWimHof && phase.wimhofPhase === 'inhaleHold') {
+                    } else if (tech.isWimHof && phase.wimhofPhase === 'inhaleHold') {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
                         displayPhase = timeInPhase < WH_INHALE_FILL ? 'Вдох' : 'Задержка';
                         progress = Math.min(1, timeInPhase / WH_INHALE_FILL);
                         wimhofPhase = 'inhaleHold';
                         wimhofOverride = 'inhaleHold';
-                    }
-                    // ---- Вим Хоф: финальный выдох ----
-                    else if (tech.isWimHof && phase.wimhofPhase === 'exhaleEnd') {
+                    } else if (tech.isWimHof && phase.wimhofPhase === 'exhaleEnd') {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
                         displayPhase = 'Выдох';
                         progress = Math.min(1, timeInPhase / phase.duration);
                         wimhofPhase = 'exhaleEnd';
                         wimhofOverride = 'exhaleEnd';
-                    }
-                    // ---- Обычные техники ----
-                    else {
+                    } else {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
                         displayPhase = phase.name;
                         progress = Math.min(1, timeInPhase / phase.duration);
@@ -1221,7 +1179,6 @@
                         wimhofOverride = null;
                     }
 
-                    // Обновляем DOM
                     breathTimer.textContent = displayTimer;
                     breathPhase.textContent = displayPhase;
                     breathCycle.textContent = 'Цикл ' + sessionCycles;
@@ -1232,7 +1189,6 @@
                     breathCircle.style.transform = 'scale(' + getCircleScale().toFixed(3) + ')';
 
                 } else if (!isFirstStart) {
-                    // Пауза
                     breathTimer.textContent = '';
                     breathPhase.textContent = 'Пауза';
                     breathCycle.textContent = 'Цикл ' + sessionCycles;
@@ -1240,65 +1196,35 @@
                 }
             }
 
-            // ============================================================
-            // 9. ПЕРЕХОД К СЛЕДУЮЩЕЙ ФАЗЕ (С ВИБРАЦИЕЙ)
-            // ============================================================
             function advanceToNextPhase() {
                 const tech = getTechnique();
-
-                // ---- ВИБРАЦИЯ при входе в новую фазу ----
                 const phase = getCurrentPhase();
                 const techName = currentTechnique;
 
-                // Паттерны вибрации для каждой техники
+                // Вибрация (только Android)
                 const VIBE_PATTERNS = {
-                    relax: {
-                        inhale: [50, 30, 50, 30, 50],
-                        hold: [100, 50, 100],
-                        exhale: [80, 40, 80, 40, 80]
-                    },
-                    focus: {
-                        inhale: [60, 40, 60, 40, 60],
-                        hold: [120, 60, 120],
-                        exhale: [60, 40, 60, 40, 60],
-                        hold2: [120, 60, 120]
-                    },
-                    calm: {
-                        inhale: [40, 20, 40, 20, 40],
-                        inhale2: [40, 20, 40, 20, 40],
-                        exhale: [100, 50, 100, 50, 100]
-                    },
-                    wimhof: {
-                        active_inhale: [30, 20, 30],
-                        active_exhale: [20, 20, 20],
-                        hold: [150, 80, 150, 80, 150],
-                        inhaleHold: [80, 40, 80],
-                        exhaleEnd: [100, 50, 100]
-                    }
+                    relax: { inhale: [50, 30, 50, 30, 50], hold: [100, 50, 100], exhale: [80, 40, 80, 40, 80] },
+                    focus: { inhale: [60, 40, 60, 40, 60], hold: [120, 60, 120], exhale: [60, 40, 60, 40, 60],
+                        hold2: [120, 60, 120] },
+                    calm: { inhale: [40, 20, 40, 20, 40], inhale2: [40, 20, 40, 20, 40], exhale: [100, 50, 100, 50,
+                            100] },
+                    wimhof: { active_inhale: [30, 20, 30], active_exhale: [20, 20, 20], hold: [150, 80, 150, 80,
+                            150], inhaleHold: [80, 40, 80], exhaleEnd: [100, 50, 100] }
                 };
 
-                // Функция вибрации (только мобильные устройства)
                 function vibrate(pattern) {
                     if (navigator.vibrate && window.innerWidth < 768) {
                         try {
                             navigator.vibrate(pattern);
-                        } catch (_) {
-                            // Игнорируем ошибки
-                        }
+                        } catch (_) {}
                     }
                 }
 
-                // Выбираем паттерн в зависимости от техники и фазы
                 if (tech.isWimHof) {
-                    if (phase.wimhofPhase === 'active') {
-                        vibrate(VIBE_PATTERNS.wimhof.active_inhale);
-                    } else if (phase.wimhofPhase === 'hold') {
-                        vibrate(VIBE_PATTERNS.wimhof.hold);
-                    } else if (phase.wimhofPhase === 'inhaleHold') {
-                        vibrate(VIBE_PATTERNS.wimhof.inhaleHold);
-                    } else if (phase.wimhofPhase === 'exhaleEnd') {
-                        vibrate(VIBE_PATTERNS.wimhof.exhaleEnd);
-                    }
+                    if (phase.wimhofPhase === 'active') vibrate(VIBE_PATTERNS.wimhof.active_inhale);
+                    else if (phase.wimhofPhase === 'hold') vibrate(VIBE_PATTERNS.wimhof.hold);
+                    else if (phase.wimhofPhase === 'inhaleHold') vibrate(VIBE_PATTERNS.wimhof.inhaleHold);
+                    else if (phase.wimhofPhase === 'exhaleEnd') vibrate(VIBE_PATTERNS.wimhof.exhaleEnd);
                 } else {
                     const pattern = VIBE_PATTERNS[techName];
                     if (pattern) {
@@ -1313,7 +1239,6 @@
                     }
                 }
 
-                // ---- Основная логика перехода ----
                 phaseIndex++;
                 if (phaseIndex >= tech.phases.length) {
                     phaseIndex = 0;
@@ -1328,9 +1253,6 @@
                 }
             }
 
-            // ============================================================
-            // 10. ОСНОВНОЙ ЦИКЛ АНИМАЦИИ (requestAnimationFrame)
-            // ============================================================
             function tick(timestamp) {
                 if (!isPlaying) return;
 
@@ -1342,7 +1264,6 @@
                 const tech = getTechnique();
                 const phase = getCurrentPhase();
 
-                // Специальная логика для Вим Хофа (активное дыхание)
                 if (tech.isWimHof && phase.wimhofPhase === 'active') {
                     const halfCycle = tech.cycleDuration / 2;
                     if (timeInPhase - wimhofLastToggle >= halfCycle) {
@@ -1350,7 +1271,6 @@
                         wimhofIsInhale = !wimhofIsInhale;
                         if (!wimhofIsInhale) wimhofActiveCount++;
 
-                        // Вибрация на переключение вдох/выдох
                         if (navigator.vibrate && window.innerWidth < 768) {
                             try {
                                 navigator.vibrate(wimhofIsInhale ? [30, 20, 30] : [20, 20, 20]);
@@ -1372,9 +1292,6 @@
                 animationId = requestAnimationFrame(tick);
             }
 
-            // ============================================================
-            // 11. УПРАВЛЕНИЕ ДЫХАНИЕМ (старт, пауза, возобновление)
-            // ============================================================
             function startBreathing() {
                 isPlaying = true;
                 isFirstStart = false;
@@ -1391,7 +1308,6 @@
                 breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
 
-                // Вибрация на старт
                 if (navigator.vibrate && window.innerWidth < 768) {
                     try {
                         navigator.vibrate([100, 50, 100]);
@@ -1410,7 +1326,6 @@
                 breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
 
-                // Вибрация на возобновление
                 if (navigator.vibrate && window.innerWidth < 768) {
                     try {
                         navigator.vibrate([80]);
@@ -1432,7 +1347,6 @@
                 breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
 
-                // Вибрация на паузу
                 if (navigator.vibrate && window.innerWidth < 768) {
                     try {
                         navigator.vibrate([60]);
@@ -1452,9 +1366,6 @@
                 }
             }
 
-            // ============================================================
-            // 12. ПЕРЕКЛЮЧЕНИЕ ТЕХНИКИ
-            // ============================================================
             function switchTechnique(technique) {
                 if (isPlaying && animationId) {
                     cancelAnimationFrame(animationId);
@@ -1470,45 +1381,35 @@
                 wimhofLastToggle = 0;
                 wimhofIsInhale = true;
 
-                // Обновляем активную кнопку
                 techniqueBtns.forEach(function(btn) {
                     btn.classList.remove('active');
                 });
                 document.querySelector('[data-technique="' + technique + '"]').classList.add('active');
 
-                // Обновляем инструкцию
                 const tech = getTechnique();
                 instruction.innerHTML =
                     '<span class="tech-title ' + tech.titleClass + '">' + tech.title + '</span>' + tech.instruction;
 
-                // Сбрасываем круг
                 breathCircleContainer.classList.remove('idle');
                 breathCircleContainer.classList.add('idle-first');
                 breathCircle.style.transform = 'scale(' + SCALE_BASE + ')';
                 breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
 
-                // Сбрасываем отображение
                 breathTimer.textContent = tech.phases[0].duration;
                 breathPhase.textContent = tech.phases[0].name;
                 breathCycle.textContent = 'Цикл 0';
                 breathHint.textContent = 'Нажми, чтобы начать';
             }
 
-            // ============================================================
-            // 13. ОБРАБОТЧИКИ СОБЫТИЙ
-            // ============================================================
-            // Клик по кругу — старт/пауза
             breathCircleContainer.addEventListener('click', toggleBreathing);
 
-            // Выбор техники
             techniqueBtns.forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     switchTechnique(btn.dataset.technique);
                 });
             });
 
-            // Пробел на клавиатуре
             document.addEventListener('keydown', function(e) {
                 if (e.code === 'Space' && e.target === document.body) {
                     e.preventDefault();
@@ -1516,21 +1417,17 @@
                 }
             });
 
-            // ============================================================
-            // 14. САЙДБАР И ТЕМА
-            // ============================================================
+            // ---- Сайдбар и тема ----
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const themeToggle = document.getElementById('themeToggle');
             const toggleIcon = document.getElementById('toggleIcon');
 
-            // Открытие/закрытие сайдбара
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('open');
                 sidebarToggle.classList.toggle('active');
             });
 
-            // Закрытие сайдбара при клике вне его
             document.addEventListener('click', function(e) {
                 if (!sidebar.contains(e.target) && e.target !== sidebarToggle) {
                     sidebar.classList.remove('open');
@@ -1538,7 +1435,6 @@
                 }
             });
 
-            // Переключение темы
             function applyTheme(theme) {
                 if (theme === 'light') {
                     document.body.classList.add('light-theme');
@@ -1549,7 +1445,6 @@
                 }
             }
 
-            // Загрузка сохранённой темы
             var savedTheme = localStorage.getItem('breath-theme');
             applyTheme(savedTheme === 'light' ? 'light' : 'dark');
 
@@ -1560,10 +1455,7 @@
                 localStorage.setItem('breath-theme', newTheme);
             });
 
-            // ============================================================
-            // 15. ИНИЦИАЛИЗАЦИЯ
-            // ============================================================
-            // Устанавливаем начальную технику (relax)
+            // ---- Инициализация ----
             var initTech = TECHNIQUES.relax;
             instruction.innerHTML =
                 '<span class="tech-title ' + initTech.titleClass + '">' + initTech.title + '</span>' + initTech.instruction;
