@@ -183,7 +183,7 @@
             color: var(--footer-text);
             font-size: 0.75rem;
             letter-spacing: 0.15em;
-            padding: 1.8rem 1rem 3rem;
+            padding: 1.8rem 1rem 1.2rem;
             background: transparent;
             border-top: 1px solid var(--footer-border);
             transition: color 0.5s ease, border-color 0.5s ease;
@@ -796,7 +796,7 @@
             </div>
         </div>
 
-        <!-- Футер с увеличенным отступом -->
+        <!-- Футер -->
         <div class="footer">
             <div class="links">
                 <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
@@ -804,6 +804,14 @@
                 <a href="mailto:idenbraun@yandex.ru">idenbraun@yandex.ru</a>
             </div>
         </div>
+
+        <!-- ============================================================ -->
+        <!-- ВОЗДУХ ВНИЗУ СТРАНИЦЫ (для мобилок)                          -->
+        <!-- Этот блок создаёт пустое пространство, чтобы ссылки           -->
+        <!-- не были прижаты к краю экрана. На мобилках нужно             -->
+        <!-- чуть-чуть прокрутить, чтобы их увидеть.                      -->
+        <!-- ============================================================ -->
+        <div style="height: 4rem; flex-shrink: 0; pointer-events: none;"></div>
 
     </div>
     <!-- Конец обёртки -->
