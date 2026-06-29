@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Breath — дыхательные практики</title>
     <style>
-        /* ----- CSS-переменные (тёмная тема по умолчанию) ----- */
+        /* ----- CSS-переменные ----- */
         :root {
             --bg: #0a0a0a;
             --bg-gradient: radial-gradient(circle at 50% 40%, #121212 0%, #050505 100%);
@@ -105,7 +105,7 @@
             box-sizing: border-box;
         }
 
-        /* ----- ГРАДИЕНТ НА HTML (без швов) ----- */
+        /* ----- ГРАДИЕНТ НА HTML ----- */
         html {
             height: 100%;
             min-height: 100vh;
@@ -139,7 +139,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ----- Обёртка (прозрачная) ----- */
+        /* ----- Обёртка (высота = экран + отступ) ----- */
         .app-wrapper {
             display: flex;
             flex-direction: column;
@@ -149,15 +149,17 @@
             min-height: 100vh;
             min-height: 100dvh;
             background: transparent;
+            /* Дополнительная высота, чтобы футер ушёл за экран */
+            padding-bottom: 5rem;
         }
 
-        /* ----- Контент (расширяется, футер прижат к низу) ----- */
+        /* ----- Контент (растягивается) ----- */
         .page-content {
             flex: 1 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             width: 100%;
             padding-top: clamp(2rem, 10vh, 6rem);
             padding-bottom: 2rem;
@@ -172,7 +174,7 @@
             gap: 2.5rem;
         }
 
-        /* ----- Футер (увеличенный отступ снизу) ----- */
+        /* ----- Футер (находится ниже экрана) ----- */
         .footer {
             flex-shrink: 0;
             width: 100%;
@@ -624,6 +626,10 @@
                 min-height: 100dvh;
             }
 
+            .app-wrapper {
+                padding-bottom: 4rem;
+            }
+
             .page-content {
                 padding-top: clamp(1.5rem, 8vh, 4rem);
                 padding-bottom: 1.5rem;
@@ -796,7 +802,7 @@
             </div>
         </div>
 
-        <!-- Футер -->
+        <!-- Футер с ссылками — он ниже экрана -->
         <div class="footer">
             <div class="links">
                 <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
@@ -804,14 +810,6 @@
                 <a href="mailto:idenbraun@yandex.ru">idenbraun@yandex.ru</a>
             </div>
         </div>
-
-        <!-- ============================================================ -->
-        <!-- ВОЗДУХ ВНИЗУ СТРАНИЦЫ (для мобилок)                          -->
-        <!-- Этот блок создаёт пустое пространство, чтобы ссылки           -->
-        <!-- не были прижаты к краю экрана. На мобилках нужно             -->
-        <!-- чуть-чуть прокрутить, чтобы их увидеть.                      -->
-        <!-- ============================================================ -->
-        <div style="height: 4rem; flex-shrink: 0; pointer-events: none;"></div>
 
     </div>
     <!-- Конец обёртки -->
