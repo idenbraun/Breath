@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Breath — дыхательные практики</title>
     <style>
         /* ----- CSS-переменные (тёмная тема по умолчанию) ----- */
@@ -102,42 +105,50 @@
             box-sizing: border-box;
         }
 
-        /* ----- Флекс-контейнер на всю высоту экрана ----- */
-        html, body {
+        /* ----- ГРАДИЕНТ НА HTML (без швов) ----- */
+        html {
             height: 100%;
             min-height: 100vh;
             min-height: 100dvh;
             background: var(--bg);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center center;
             transition: background 0.5s ease;
         }
 
+        /* ----- iOS: статус-бар и подложка ----- */
         body {
-            font-family: 'Inter', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
             min-height: 100vh;
             min-height: 100dvh;
             margin: 0;
             padding: 1.5rem 1.5rem 0 1.5rem;
+            font-family: 'Inter', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
             color: var(--text);
             letter-spacing: -0.01em;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            transition: background 0.5s ease, color 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: transparent;
+            transition: color 0.5s ease;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ----- Основной враппер (растягивается на всю высоту) ----- */
+        /* ----- Обёртка (прозрачная) ----- */
         .app-wrapper {
             display: flex;
             flex-direction: column;
             flex: 1 0 auto;
             width: 100%;
             max-width: 700px;
-            min-height: 100%;
+            min-height: 100vh;
             min-height: 100dvh;
+            background: transparent;
         }
 
         /* ----- Контент (расширяется, футер прижат к низу) ----- */
@@ -161,7 +172,7 @@
             gap: 2.5rem;
         }
 
-        /* ----- Футер (всегда внизу, не прыгает) ----- */
+        /* ----- Футер (увеличенный отступ снизу) ----- */
         .footer {
             flex-shrink: 0;
             width: 100%;
@@ -172,7 +183,7 @@
             color: var(--footer-text);
             font-size: 0.75rem;
             letter-spacing: 0.15em;
-            padding: 1.8rem 1rem 1.2rem;
+            padding: 1.8rem 1rem 3rem;
             background: transparent;
             border-top: 1px solid var(--footer-border);
             transition: color 0.5s ease, border-color 0.5s ease;
@@ -199,8 +210,7 @@
             border-bottom-color: #444;
         }
 
-        /* ----- Остальные стили ----- */
-        /* Скрытые элементы, предупреждения, круг, техники — всё как было */
+        /* ----- Остальные стили (без изменений) ----- */
         .sidebar-toggle {
             position: fixed;
             left: 0;
@@ -740,7 +750,7 @@
         При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме.
     </div>
 
-    <!-- НОВАЯ ОБЁРТКА для фиксации футера -->
+    <!-- Основная обёртка -->
     <div class="app-wrapper">
 
         <div class="page-content">
@@ -786,7 +796,7 @@
             </div>
         </div>
 
-        <!-- Футер внутри обёртки и прижат к низу -->
+        <!-- Футер с увеличенным отступом -->
         <div class="footer">
             <div class="links">
                 <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
@@ -1417,7 +1427,9 @@
                 }
             });
 
-            // ---- Сайдбар и тема ----
+            // ============================================================
+            // 3. САЙДБАР И ТЕМА (с обновлением фона на html)
+            // ============================================================
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const themeToggle = document.getElementById('themeToggle');
@@ -1436,23 +1448,21 @@
             });
 
             function applyTheme(theme) {
-                if (theme === 'light') {
-                    document.body.classList.add('light-theme');
-                    toggleIcon.textContent = '☀️';
-                } else {
-                    document.body.classList.remove('light-theme');
-                    toggleIcon.textContent = '🌙';
-                }
+                var isLight = theme === 'light';
+                document.body.classList.toggle('light-theme', isLight);
+                toggleIcon.textContent = isLight ? '☀️' : '🌙';
+                // !!! Важно: обновляем фон на html
+                var bgGradient = getComputedStyle(document.documentElement).getPropertyValue('--bg-gradient').trim();
+                document.documentElement.style.background = bgGradient;
+                localStorage.setItem('breath-theme', theme);
             }
 
-            var savedTheme = localStorage.getItem('breath-theme');
-            applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+            var savedTheme = localStorage.getItem('breath-theme') || 'dark';
+            applyTheme(savedTheme);
 
             themeToggle.addEventListener('click', function() {
                 var isLight = document.body.classList.contains('light-theme');
-                var newTheme = isLight ? 'dark' : 'light';
-                applyTheme(newTheme);
-                localStorage.setItem('breath-theme', newTheme);
+                applyTheme(isLight ? 'dark' : 'light');
             });
 
             // ---- Инициализация ----
