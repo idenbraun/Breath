@@ -2,11 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Breath — дыхательные практики</title>
+
+    <!-- Манифест как в канбане -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkJyZWF0aCIsCiAgInNob3J0X25hbWUiOiAiQnJlYXRoIiwKICAiZGVzY3JpcHRpb24iOiAi0JTQsNGF0LDQvdC40Y8g0L/RgNCw0LrRgtC40LrQuCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGEwYTBhIiwKICAidGhlbWVfY29sb3IiOiAiIzBhMGEwYSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMiclM0UlM0NyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyBmaWxsPSclMjMwYTBhMGEnIHJ4PSc2NCcvJTNFJTNDdGV4dCB4PScyNTYnIHk9JzMyMCcgZm9udC1zaXplPScyNTAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZpbGw9JyUyM2ZmZicgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnJTNF4pqAICUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrIGFueWxhbmciCiAgICB9CiAgXSwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLAogICJwcmVmZXJfcmVsYXRlZF9hcHBsaWNhdGlvbnMiOiBbXSwKICAic2NvcGUiOiBbXQp9">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a' rx='64'/%3E%3Ctext x='256' y='320' font-size='250' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3E🌬️%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a' rx='64'/%3E%3Ctext x='256' y='320' font-size='250' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3E🌬️%3C/text%3E%3C/svg%3E">
+
     <style>
         /* ----- CSS-переменные (тёмная тема по умолчанию) ----- */
         :root {
@@ -16,15 +22,18 @@
             --text-secondary: #5a5a5a;
             --text-muted: #4a4a4a;
             --text-dim: #6a6a6a;
-            --panel-bg: rgba(12, 12, 12, 0.8);
+            --panel-bg: rgba(12, 12, 12, 0.6);
             --panel-border: #262626;
             --btn-border: #3a3a3a;
             --btn-text: #cccccc;
-            --accent: #b39ddb;
-            --accent-dim: #7b6fa0;
-            --accent-glow: rgba(179, 157, 219, 0.6);
-            --accent-hold: #c9a87e;
-            --accent-hold-glow: rgba(201, 168, 126, 0.6);
+
+            /* НОВЫЕ АКЦЕНТНЫЕ ЦВЕТА — из канбана */
+            --accent: #4a6cf7;
+            --accent-dim: #6a8cff;
+            --accent-glow: rgba(74, 108, 247, 0.6);
+            --accent-hold: #f9a825;
+            --accent-hold-glow: rgba(249, 168, 37, 0.6);
+
             --circle-bg: #151515;
             --footer-text: #3a3a3a;
             --footer-link: #6a6a6a;
@@ -36,24 +45,30 @@
             --toggle-track: #3a3a3a;
             --modal-bg: rgba(10,10,10,0.98);
             --modal-border: #2a2a2a;
-            --color-relax: #b39ddb;
-            --color-relax-glow: rgba(179, 157, 219, 0.6);
-            --color-relax-bg: rgba(179, 157, 219, 0.2);
-            --color-focus: #4db6ac;
-            --color-focus-glow: rgba(77, 182, 172, 0.6);
-            --color-focus-bg: rgba(77, 182, 172, 0.2);
-            --color-calm: #64b5f6;
-            --color-calm-glow: rgba(100, 181, 246, 0.6);
-            --color-calm-bg: rgba(100, 181, 246, 0.2);
-            --color-wimhof: #e8734a;
-            --color-wimhof-glow: rgba(232, 115, 74, 0.6);
-            --color-wimhof-bg: rgba(232, 115, 74, 0.2);
+
+            /* ЦВЕТА ТЕХНИК — яркие, как в канбане */
+            --color-relax: #a29bfe;
+            --color-relax-glow: rgba(162, 155, 254, 0.6);
+            --color-relax-bg: rgba(162, 155, 254, 0.15);
+
+            --color-focus: #4a6cf7;
+            --color-focus-glow: rgba(74, 108, 247, 0.6);
+            --color-focus-bg: rgba(74, 108, 247, 0.15);
+
+            --color-calm: #34c759;
+            --color-calm-glow: rgba(52, 199, 89, 0.6);
+            --color-calm-bg: rgba(52, 199, 89, 0.15);
+
+            --color-wimhof: #ffa502;
+            --color-wimhof-glow: rgba(255, 165, 2, 0.6);
+            --color-wimhof-bg: rgba(255, 165, 2, 0.15);
+
             --inactive-border: rgba(255,255,255,0.06);
             --warn-bg: #1a1410;
             --warn-border: #3a2a1a;
         }
 
-        /* ----- Светлая тема ----- */
+        /* ----- Светлая тема (акценты тоже обновлены) ----- */
         .light-theme {
             --bg: #f5f5f5;
             --bg-gradient: radial-gradient(circle at 50% 40%, #e8e8e8 0%, #f5f5f5 100%);
@@ -65,11 +80,13 @@
             --panel-border: #ddd;
             --btn-border: #ccc;
             --btn-text: #555;
-            --accent: #9575cd;
-            --accent-dim: #6a4f9c;
-            --accent-glow: rgba(149, 117, 205, 0.5);
-            --accent-hold: #b8946e;
-            --accent-hold-glow: rgba(184, 148, 110, 0.5);
+
+            --accent: #4a6cf7;
+            --accent-dim: #6a8cff;
+            --accent-glow: rgba(74, 108, 247, 0.4);
+            --accent-hold: #f9a825;
+            --accent-hold-glow: rgba(249, 168, 37, 0.4);
+
             --circle-bg: #e8e8e8;
             --footer-text: #888;
             --footer-link: #777;
@@ -81,18 +98,23 @@
             --toggle-track: #ddd;
             --modal-bg: rgba(250,250,250,0.98);
             --modal-border: #ddd;
-            --color-relax: #9575cd;
-            --color-relax-glow: rgba(149, 117, 205, 0.5);
-            --color-relax-bg: rgba(149, 117, 205, 0.15);
-            --color-focus: #378b82;
-            --color-focus-glow: rgba(55, 139, 130, 0.5);
-            --color-focus-bg: rgba(55, 139, 130, 0.15);
-            --color-calm: #4d8fc5;
-            --color-calm-glow: rgba(77, 143, 197, 0.5);
-            --color-calm-bg: rgba(77, 143, 197, 0.15);
-            --color-wimhof: #d4653a;
-            --color-wimhof-glow: rgba(212, 101, 58, 0.5);
-            --color-wimhof-bg: rgba(212, 101, 58, 0.15);
+
+            --color-relax: #a29bfe;
+            --color-relax-glow: rgba(162, 155, 254, 0.4);
+            --color-relax-bg: rgba(162, 155, 254, 0.12);
+
+            --color-focus: #4a6cf7;
+            --color-focus-glow: rgba(74, 108, 247, 0.4);
+            --color-focus-bg: rgba(74, 108, 247, 0.12);
+
+            --color-calm: #34c759;
+            --color-calm-glow: rgba(52, 199, 89, 0.4);
+            --color-calm-bg: rgba(52, 199, 89, 0.12);
+
+            --color-wimhof: #ffa502;
+            --color-wimhof-glow: rgba(255, 165, 2, 0.4);
+            --color-wimhof-bg: rgba(255, 165, 2, 0.12);
+
             --inactive-border: rgba(0,0,0,0.08);
             --warn-bg: #fff8f0;
             --warn-border: #e0d0b0;
@@ -105,7 +127,6 @@
             box-sizing: border-box;
         }
 
-        /* ----- ГРАДИЕНТ НА HTML (без швов) ----- */
         html {
             height: 100%;
             min-height: 100vh;
@@ -119,7 +140,6 @@
             transition: background 0.5s ease;
         }
 
-        /* ----- iOS: статус-бар и подложка ----- */
         body {
             min-height: 100vh;
             min-height: 100dvh;
@@ -139,7 +159,6 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ----- Обёртка (прозрачная) ----- */
         .app-wrapper {
             display: flex;
             flex-direction: column;
@@ -151,7 +170,6 @@
             background: transparent;
         }
 
-        /* ----- Контент (расширяется, футер прижат к низу) ----- */
         .page-content {
             flex: 1 0 auto;
             display: flex;
@@ -163,6 +181,7 @@
             padding-bottom: 2rem;
         }
 
+        /* ВНЕШНИЙ БОКС УБРАН — контент прямо в потоке */
         .container {
             width: 100%;
             display: flex;
@@ -172,7 +191,7 @@
             gap: 2.5rem;
         }
 
-        /* ----- Футер (увеличенный отступ снизу) ----- */
+        /* ----- Футер (ссылки как в канбане) ----- */
         .footer {
             flex-shrink: 0;
             width: 100%;
@@ -200,14 +219,17 @@
 
         .footer a {
             color: var(--footer-link);
-            text-decoration: none;
-            transition: color 0.25s;
-            border-bottom: 1px solid transparent;
-            padding-bottom: 2px;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-thickness: 1px;
+            text-decoration-color: transparent;
+            transition: text-decoration-color 0.25s, color 0.25s;
+            font-weight: 400;
+            letter-spacing: 0.02em;
         }
         .footer a:hover {
             color: var(--footer-link-hover);
-            border-bottom-color: #444;
+            text-decoration-color: currentColor;
         }
 
         /* ----- Остальные стили (без изменений) ----- */
@@ -377,6 +399,7 @@
             display: flex;
             gap: 0.4rem;
             width: 100%;
+            max-width: 600px;
         }
 
         .technique-btn {
@@ -756,6 +779,8 @@
         <div class="page-content">
             <div class="container">
 
+                <!-- КОНТЕНТ БЕЗ ВНЕШНЕГО БОКСА -->
+
                 <div class="technique-selector" id="techniqueSelector">
                     <button class="technique-btn active" data-technique="relax">
                         <span class="tech-name">Расслабление</span>
@@ -796,7 +821,6 @@
             </div>
         </div>
 
-        <!-- Футер с увеличенным отступом -->
         <div class="footer">
             <div class="links">
                 <a href="https://github.com/idenbraun" target="_blank" rel="noopener">GitHub</a>
@@ -806,7 +830,6 @@
         </div>
 
     </div>
-    <!-- Конец обёртки -->
 
     <script>
         (function() {
@@ -889,12 +912,12 @@
             const WH_EXHALE_END = 5;
 
             function glowColor(tech, isHold) {
-                if (isHold) return 'rgba(201,168,126,ALPHA)';
+                if (isHold) return 'rgba(249,168,37,ALPHA)';
                 const colors = {
-                    relax: 'rgba(179,157,219,ALPHA)',
-                    focus: 'rgba(77,182,172,ALPHA)',
-                    calm: 'rgba(100,181,246,ALPHA)',
-                    wimhof: 'rgba(232,115,74,ALPHA)'
+                    relax: 'rgba(162,155,254,ALPHA)',
+                    focus: 'rgba(74,108,247,ALPHA)',
+                    calm: 'rgba(52,199,89,ALPHA)',
+                    wimhof: 'rgba(255,165,2,ALPHA)'
                 };
                 return colors[tech] || colors.relax;
             }
@@ -1211,7 +1234,6 @@
                 const phase = getCurrentPhase();
                 const techName = currentTechnique;
 
-                // Вибрация (только Android)
                 const VIBE_PATTERNS = {
                     relax: { inhale: [50, 30, 50, 30, 50], hold: [100, 50, 100], exhale: [80, 40, 80, 40, 80] },
                     focus: { inhale: [60, 40, 60, 40, 60], hold: [120, 60, 120], exhale: [60, 40, 60, 40, 60],
@@ -1428,7 +1450,7 @@
             });
 
             // ============================================================
-            // 3. САЙДБАР И ТЕМА (с обновлением фона на html)
+            // 3. САЙДБАР И ТЕМА
             // ============================================================
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -1451,7 +1473,6 @@
                 var isLight = theme === 'light';
                 document.body.classList.toggle('light-theme', isLight);
                 toggleIcon.textContent = isLight ? '☀️' : '🌙';
-                // !!! Важно: обновляем фон на html
                 var bgGradient = getComputedStyle(document.documentElement).getPropertyValue('--bg-gradient').trim();
                 document.documentElement.style.background = bgGradient;
                 localStorage.setItem('breath-theme', theme);
