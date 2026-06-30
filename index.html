@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Breath — дыхательные практики</title>
 
-    <!-- Манифест как в канбане -->
+    <!-- Манифест -->
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkJyZWF0aCIsCiAgInNob3J0X25hbWUiOiAiQnJlYXRoIiwKICAiZGVzY3JpcHRpb24iOiAi0JTQsNGF0LDQvdC40Y8g0L/RgNCw0LrRgtC40LrQuCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGEwYTBhIiwKICAidGhlbWVfY29sb3IiOiAiIzBhMGEwYSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMiclM0UlM0NyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyBmaWxsPSclMjMwYTBhMGEnIHJ4PSc2NCcvJTNFJTNDdGV4dCB4PScyNTYnIHk9JzMyMCcgZm9udC1zaXplPScyNTAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZpbGw9JyUyM2ZmZicgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnJTNF4pqAICUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrIGFueWxhbmciCiAgICB9CiAgXSwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLAogICJwcmVmZXJfcmVsYXRlZF9hcHBsaWNhdGlvbnMiOiBbXSwKICAic2NvcGUiOiBbXQp9">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a' rx='64'/%3E%3Ctext x='256' y='320' font-size='250' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3E🌬️%3C/text%3E%3C/svg%3E" type="image/svg+xml">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a' rx='64'/%3E%3Ctext x='256' y='320' font-size='250' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3E🌬️%3C/text%3E%3C/svg%3E">
@@ -27,7 +27,6 @@
             --btn-border: #3a3a3a;
             --btn-text: #cccccc;
 
-            /* НОВЫЕ АКЦЕНТНЫЕ ЦВЕТА — из канбана */
             --accent: #4a6cf7;
             --accent-dim: #6a8cff;
             --accent-glow: rgba(74, 108, 247, 0.6);
@@ -46,7 +45,6 @@
             --modal-bg: rgba(10,10,10,0.98);
             --modal-border: #2a2a2a;
 
-            /* ЦВЕТА ТЕХНИК — яркие, как в канбане */
             --color-relax: #a29bfe;
             --color-relax-glow: rgba(162, 155, 254, 0.6);
             --color-relax-bg: rgba(162, 155, 254, 0.15);
@@ -68,7 +66,7 @@
             --warn-border: #3a2a1a;
         }
 
-        /* ----- Светлая тема (акценты тоже обновлены) ----- */
+        /* ----- Светлая тема ----- */
         .light-theme {
             --bg: #f5f5f5;
             --bg-gradient: radial-gradient(circle at 50% 40%, #e8e8e8 0%, #f5f5f5 100%);
@@ -181,7 +179,6 @@
             padding-bottom: 2rem;
         }
 
-        /* ВНЕШНИЙ БОКС УБРАН — контент прямо в потоке */
         .container {
             width: 100%;
             display: flex;
@@ -191,7 +188,7 @@
             gap: 2.5rem;
         }
 
-        /* ----- Футер (ссылки как в канбане) ----- */
+        /* ----- Футер ----- */
         .footer {
             flex-shrink: 0;
             width: 100%;
@@ -232,7 +229,9 @@
             text-decoration-color: currentColor;
         }
 
-        /* ----- Остальные стили (без изменений) ----- */
+        /* ================================================================
+           САЙДБАР — КАК В REALITY CHECK
+           ================================================================ */
         .sidebar-toggle {
             position: fixed;
             left: 0;
@@ -248,11 +247,13 @@
             transition: all 0.3s ease;
             opacity: 0.5;
         }
+
         .sidebar-toggle:hover {
             opacity: 1;
             width: 10px;
             background: var(--footer-link);
         }
+
         .sidebar-toggle.active {
             opacity: 0;
             pointer-events: none;
@@ -260,22 +261,22 @@
 
         .sidebar {
             position: fixed;
-            left: -160px;
+            left: -120px;
             top: 0;
             bottom: 0;
-            width: 160px;
+            width: 120px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem 0.8rem;
-            gap: 1.8rem;
+            padding: 1.5rem 0.5rem;
+            gap: 2rem;
             border-right: 1px solid var(--sidebar-border);
             z-index: 20;
             background: var(--bg);
-            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
-            overflow: visible;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease, border-color 0.5s ease;
         }
+
         .sidebar.open {
             left: 0;
         }
@@ -292,8 +293,10 @@
             display: flex;
             gap: 5px;
             opacity: 0.3;
+            margin-top: auto;
             margin-bottom: 0.5rem;
         }
+
         .sidebar-dots span {
             width: 3px;
             height: 3px;
@@ -302,12 +305,12 @@
         }
 
         .sidebar-label {
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             letter-spacing: 0.2em;
             color: var(--text-muted);
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: -1.4rem;
+            margin-bottom: -1.2rem;
             transition: color 0.3s ease;
         }
 
@@ -322,6 +325,7 @@
             display: flex;
             align-items: center;
         }
+
         .toggle-thumb {
             position: absolute;
             width: 22px;
@@ -331,7 +335,7 @@
             left: 3px;
             top: 3px;
             transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             z-index: 2;
             display: flex;
             align-items: center;
@@ -339,9 +343,83 @@
             font-size: 11px;
             line-height: 1;
         }
+
         .light-theme .toggle-thumb {
             transform: translateX(24px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ----- Тумблер языка ----- */
+        .lang-toggle-track {
+            width: 52px;
+            height: 28px;
+            background: var(--toggle-track);
+            border-radius: 14px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lang-toggle-thumb {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            left: 3px;
+            top: 3px;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #333;
+        }
+
+        .lang-en .lang-toggle-thumb {
+            transform: translateX(24px);
+        }
+
+        .lang-label-left,
+        .lang-label-right {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+            color: #fff;
+        }
+
+        .lang-label-left {
+            margin-right: auto;
+            margin-left: 6px;
+        }
+
+        .lang-label-right {
+            margin-left: auto;
+            margin-right: 6px;
+        }
+
+        .lang-en .lang-label-right {
+            opacity: 1;
+        }
+        .lang-en .lang-label-left {
+            opacity: 0.3;
+        }
+        body:not(.lang-en) .lang-label-left {
+            opacity: 1;
+        }
+        body:not(.lang-en) .lang-label-right {
+            opacity: 0.3;
         }
 
         .warn-wrapper {
@@ -349,7 +427,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            gap: 0.5rem;
         }
 
         .warn-icon {
@@ -753,24 +831,42 @@
 
     <!-- Сайдбар -->
     <button class="sidebar-toggle" id="sidebarToggle" title="Меню"></button>
+
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-label">Тема</div>
+        <div class="sidebar-label" data-ru="Тема" data-en="Theme">Тема</div>
         <div class="sidebar-row">
             <div class="toggle-track" id="themeToggle">
-                <div class="toggle-thumb"><span id="toggleIcon">🌙</span></div>
+                <div class="toggle-thumb">
+                    <span id="toggleIcon">🌙</span>
+                </div>
             </div>
         </div>
+
+        <div class="sidebar-label" data-ru="Язык" data-en="Language">Язык</div>
+        <div class="sidebar-row">
+            <div class="lang-toggle-track" id="langToggle">
+                <span class="lang-label-left">RU</span>
+                <div class="lang-toggle-thumb"></div>
+                <span class="lang-label-right">EN</span>
+            </div>
+        </div>
+
         <div class="warn-wrapper">
             <span class="warn-icon" id="warnIcon">⚠️</span>
-            <div class="sidebar-dots"><span></span><span></span><span></span></div>
+            <div class="sidebar-dots">
+                <span></span><span></span><span></span>
+            </div>
         </div>
     </div>
 
     <div class="warn-bubble" id="warnBubble">
-        <strong>Практики выполняются только в положении сидя или лёжа,</strong> в безопасной обстановке.<br><br>
-        <strong>Не практикуйте за рулём,</strong> во время управления техникой, в воде или в других ситуациях, где потеря сознания может привести к травме.<br><br>
-        Дыхательные техники влияют на уровень кислорода в крови. Если вы новичок — начните с <strong>«Расслабления»</strong>.<br><br>
-        При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме.
+        <strong data-ru="Практики выполняются только в положении сидя или лёжа," data-en="Practices are performed only while sitting or lying down,">Практики выполняются только в положении сидя или лёжа,</strong>
+        <span data-ru="в безопасной обстановке." data-en="in a safe environment.">в безопасной обстановке.</span><br><br>
+        <strong data-ru="Не практикуйте за рулём," data-en="Do not practice while driving,">Не практикуйте за рулём,</strong>
+        <span data-ru="во время управления техникой, в воде или в других ситуациях, где потеря сознания может привести к травме." data-en="while operating machinery, in water, or in other situations where loss of consciousness may lead to injury.">во время управления техникой, в воде или в других ситуациях, где потеря сознания может привести к травме.</span><br><br>
+        <span data-ru="Дыхательные техники влияют на уровень кислорода в крови. Если вы новичок — начните с" data-en="Breathing techniques affect blood oxygen levels. If you are a beginner — start with">Дыхательные техники влияют на уровень кислорода в крови. Если вы новичок — начните с</span>
+        <strong data-ru="«Расслабления»." data-en="«Relaxation».">«Расслабления».</strong><br><br>
+        <span data-ru="При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме." data-en="If you feel dizzy or uncomfortable, stop the practice immediately and breathe normally.">При головокружении или дискомфорте немедленно прекратите практику и дышите в обычном ритме.</span>
     </div>
 
     <!-- Основная обёртка -->
@@ -779,23 +875,21 @@
         <div class="page-content">
             <div class="container">
 
-                <!-- КОНТЕНТ БЕЗ ВНЕШНЕГО БОКСА -->
-
                 <div class="technique-selector" id="techniqueSelector">
                     <button class="technique-btn active" data-technique="relax">
-                        <span class="tech-name">Расслабление</span>
+                        <span class="tech-name" data-ru="Расслабление" data-en="Relaxation">Расслабление</span>
                         <span class="tech-pattern">4-7-8</span>
                     </button>
                     <button class="technique-btn" data-technique="focus">
-                        <span class="tech-name">Концентрация</span>
+                        <span class="tech-name" data-ru="Концентрация" data-en="Focus">Концентрация</span>
                         <span class="tech-pattern">4×4</span>
                     </button>
                     <button class="technique-btn" data-technique="calm">
-                        <span class="tech-name">Успокоение</span>
+                        <span class="tech-name" data-ru="Успокоение" data-en="Calm">Успокоение</span>
                         <span class="tech-pattern">2-2-8</span>
                     </button>
                     <button class="technique-btn" data-technique="wimhof">
-                        <span class="tech-name">Бодрость</span>
+                        <span class="tech-name" data-ru="Бодрость" data-en="Vitality">Бодрость</span>
                         <span class="tech-pattern">Вим Хоф</span>
                     </button>
                 </div>
@@ -804,18 +898,19 @@
                     <div class="breath-circle" id="breathCircle">
                         <div class="breath-ring" id="breathRing"></div>
                         <div class="breath-circle-inner">
-                            <div class="breath-start-hint">Начать практику</div>
+                            <div class="breath-start-hint" data-ru="Начать практику" data-en="Start practice">Начать практику</div>
                             <div class="breath-timer" id="breathTimer">4</div>
-                            <div class="breath-phase" id="breathPhase">Вдох</div>
+                            <div class="breath-phase" id="breathPhase" data-ru="Вдох" data-en="Inhale">Вдох</div>
                             <div class="breath-cycle" id="breathCycle">Цикл 0</div>
-                            <div class="breath-hint" id="breathHint">Нажми, чтобы начать</div>
+                            <div class="breath-hint" id="breathHint" data-ru="Нажми, чтобы начать" data-en="Tap to start">Нажми, чтобы начать</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="instruction" id="instruction">
-                    <span class="tech-title relax-color">Расслабление</span>
-                    Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну
+                    <span class="tech-title relax-color" data-ru="Расслабление" data-en="Relaxation">Расслабление</span>
+                    <span data-ru="Вдох 4с, задержка 7с, выдох 8с" data-en="Inhale 4s, hold 7s, exhale 8s">Вдох 4с, задержка 7с, выдох 8с</span><br>
+                    <span data-ru="Для глубокого расслабления и подготовки ко сну" data-en="For deep relaxation and sleep preparation">Для глубокого расслабления и подготовки ко сну</span>
                 </div>
 
             </div>
@@ -925,63 +1020,80 @@
             const TECHNIQUES = {
                 relax: {
                     title: 'Расслабление',
+                    titleEn: 'Relaxation',
                     titleClass: 'relax-color',
-                    instruction: 'Вдох 4с, задержка 7с, выдох 8с<br>Для глубокого расслабления и подготовки ко сну',
+                    instruction: 'Вдох 4с, задержка 7с, выдох 8с',
+                    instructionEn: 'Inhale 4s, hold 7s, exhale 8s',
+                    desc: 'Для глубокого расслабления и подготовки ко сну',
+                    descEn: 'For deep relaxation and sleep preparation',
                     expandDuration: 4,
                     holdDuration: 7,
                     contractDuration: 8,
                     phases: [
-                        { name: 'Вдох', duration: 4, isHold: false, fillDir: 'up' },
-                        { name: 'Задержка', duration: 7, isHold: true, fillDir: 'hold' },
-                        { name: 'Выдох', duration: 8, isHold: false, fillDir: 'down' }
+                        { name: 'Вдох', nameEn: 'Inhale', duration: 4, isHold: false, fillDir: 'up' },
+                        { name: 'Задержка', nameEn: 'Hold', duration: 7, isHold: true, fillDir: 'hold' },
+                        { name: 'Выдох', nameEn: 'Exhale', duration: 8, isHold: false, fillDir: 'down' }
                     ]
                 },
                 focus: {
                     title: 'Концентрация',
+                    titleEn: 'Focus',
                     titleClass: 'focus-color',
-                    instruction: 'Вдох 4с, задержка 4с, выдох 4с, задержка 4с<br>Для фокуса и ментальной ясности',
+                    instruction: 'Вдох 4с, задержка 4с, выдох 4с, задержка 4с',
+                    instructionEn: 'Inhale 4s, hold 4s, exhale 4s, hold 4s',
+                    desc: 'Для фокуса и ментальной ясности',
+                    descEn: 'For focus and mental clarity',
                     expandDuration: 4,
                     holdDuration: 4,
                     contractDuration: 8,
                     phases: [
-                        { name: 'Вдох', duration: 4, isHold: false, fillDir: 'up' },
-                        { name: 'Задержка', duration: 4, isHold: true, fillDir: 'hold' },
-                        { name: 'Выдох', duration: 4, isHold: false, fillDir: 'down' },
-                        { name: 'Задержка', duration: 4, isHold: true, fillDir: 'hold' }
+                        { name: 'Вдох', nameEn: 'Inhale', duration: 4, isHold: false, fillDir: 'up' },
+                        { name: 'Задержка', nameEn: 'Hold', duration: 4, isHold: true, fillDir: 'hold' },
+                        { name: 'Выдох', nameEn: 'Exhale', duration: 4, isHold: false, fillDir: 'down' },
+                        { name: 'Задержка', nameEn: 'Hold', duration: 4, isHold: true, fillDir: 'hold' }
                     ]
                 },
                 calm: {
                     title: 'Успокоение',
+                    titleEn: 'Calm',
                     titleClass: 'calm-color',
-                    instruction: 'Два коротких вдоха через нос, длинный выдох через рот<br>Для быстрого снятия стресса и тревоги',
+                    instruction: 'Два коротких вдоха через нос, длинный выдох через рот',
+                    instructionEn: 'Two short inhales through the nose, long exhale through the mouth',
+                    desc: 'Для быстрого снятия стресса и тревоги',
+                    descEn: 'For quick relief from stress and anxiety',
                     expandDuration: 4,
                     holdDuration: 0,
                     contractDuration: 8,
                     phases: [
-                        { name: 'Вдох', duration: 2, isHold: false, fillDir: 'up' },
-                        { name: 'Довдох', duration: 2, isHold: false, fillDir: 'up' },
-                        { name: 'Выдох', duration: 8, isHold: false, fillDir: 'down' }
+                        { name: 'Вдох', nameEn: 'Inhale', duration: 2, isHold: false, fillDir: 'up' },
+                        { name: 'Довдох', nameEn: 'Inhale', duration: 2, isHold: false, fillDir: 'up' },
+                        { name: 'Выдох', nameEn: 'Exhale', duration: 8, isHold: false, fillDir: 'down' }
                     ]
                 },
                 wimhof: {
                     title: 'Бодрость',
+                    titleEn: 'Vitality',
                     titleClass: 'wimhof-color',
-                    instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с, вдох и задержка 15с, выдох 5с<br>Для бодрости и прилива энергии',
+                    instruction: '30 глубоких вдохов-выдохов, задержка на выдохе ~60с, вдох и задержка 15с, выдох 5с',
+                    instructionEn: '30 deep inhales-exhales, hold after exhale ~60s, inhale and hold 15s, exhale 5s',
+                    desc: 'Для бодрости и прилива энергии',
+                    descEn: 'For vitality and energy boost',
                     isWimHof: true,
                     activeCycles: 30,
                     cycleDuration: 3,
                     phases: [
-                        { name: 'Активное дыхание', duration: 90, isHold: false, fillDir: 'up',
+                        { name: 'Активное дыхание', nameEn: 'Active breathing', duration: 90, isHold: false, fillDir: 'up',
                         wimhofPhase: 'active' },
-                        { name: 'Задержка', duration: 60, isHold: true, fillDir: 'hold', wimhofPhase: 'hold' },
-                        { name: 'Вдох-задержка', duration: 15, isHold: true, fillDir: 'hold',
+                        { name: 'Задержка', nameEn: 'Hold', duration: 60, isHold: true, fillDir: 'hold', wimhofPhase: 'hold' },
+                        { name: 'Вдох-задержка', nameEn: 'Inhale-hold', duration: 15, isHold: true, fillDir: 'hold',
                         wimhofPhase: 'inhaleHold' },
-                        { name: 'Выдох', duration: WH_EXHALE_END, isHold: false, fillDir: 'down',
+                        { name: 'Выдох', nameEn: 'Exhale', duration: WH_EXHALE_END, isHold: false, fillDir: 'down',
                         wimhofPhase: 'exhaleEnd' }
                     ]
                 }
             };
 
+            let currentLang = 'ru';
             let currentTechnique = 'relax';
             let isPlaying = false;
             let phaseIndex = 0;
@@ -1010,6 +1122,10 @@
 
             function getCurrentPhase() {
                 return getTechnique().phases[phaseIndex];
+            }
+
+            function getPhaseName(phase) {
+                return currentLang === 'en' ? phase.nameEn : phase.name;
             }
 
             function isWimHof() {
@@ -1181,32 +1297,32 @@
                 if (isPlaying) {
                     if (tech.isWimHof && phase.wimhofPhase === 'active') {
                         displayTimer = wimhofActiveCount + '/' + tech.activeCycles;
-                        displayPhase = wimhofIsInhale ? 'Вдох' : 'Выдох';
+                        displayPhase = wimhofIsInhale ? (currentLang === 'en' ? 'Inhale' : 'Вдох') : (currentLang === 'en' ? 'Exhale' : 'Выдох');
                         const halfCycle = tech.cycleDuration / 2;
                         progress = Math.min(1, (timeInPhase - wimhofLastToggle) / halfCycle);
                         wimhofPhase = 'active';
                         wimhofOverride = 'active';
                     } else if (tech.isWimHof && phase.wimhofPhase === 'hold') {
                         displayTimer = Math.ceil(timeInPhase);
-                        displayPhase = 'Задержка';
+                        displayPhase = currentLang === 'en' ? 'Hold' : 'Задержка';
                         progress = Math.min(1, timeInPhase / 60);
                         wimhofPhase = 'hold';
                         wimhofOverride = 'hold';
                     } else if (tech.isWimHof && phase.wimhofPhase === 'inhaleHold') {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
-                        displayPhase = timeInPhase < WH_INHALE_FILL ? 'Вдох' : 'Задержка';
+                        displayPhase = timeInPhase < WH_INHALE_FILL ? (currentLang === 'en' ? 'Inhale' : 'Вдох') : (currentLang === 'en' ? 'Hold' : 'Задержка');
                         progress = Math.min(1, timeInPhase / WH_INHALE_FILL);
                         wimhofPhase = 'inhaleHold';
                         wimhofOverride = 'inhaleHold';
                     } else if (tech.isWimHof && phase.wimhofPhase === 'exhaleEnd') {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
-                        displayPhase = 'Выдох';
+                        displayPhase = currentLang === 'en' ? 'Exhale' : 'Выдох';
                         progress = Math.min(1, timeInPhase / phase.duration);
                         wimhofPhase = 'exhaleEnd';
                         wimhofOverride = 'exhaleEnd';
                     } else {
                         displayTimer = Math.max(0, Math.ceil(phase.duration - timeInPhase));
-                        displayPhase = phase.name;
+                        displayPhase = getPhaseName(phase);
                         progress = Math.min(1, timeInPhase / phase.duration);
                         wimhofPhase = null;
                         wimhofOverride = null;
@@ -1214,7 +1330,7 @@
 
                     breathTimer.textContent = displayTimer;
                     breathPhase.textContent = displayPhase;
-                    breathCycle.textContent = 'Цикл ' + sessionCycles;
+                    breathCycle.textContent = (currentLang === 'en' ? 'Cycle ' : 'Цикл ') + sessionCycles;
                     breathHint.textContent = '';
 
                     drawRing(progress, phase.fillDir, phase.isHold, wimhofOverride);
@@ -1223,9 +1339,9 @@
 
                 } else if (!isFirstStart) {
                     breathTimer.textContent = '';
-                    breathPhase.textContent = 'Пауза';
-                    breathCycle.textContent = 'Цикл ' + sessionCycles;
-                    breathHint.textContent = 'Нажми, чтобы продолжить';
+                    breathPhase.textContent = currentLang === 'en' ? 'Pause' : 'Пауза';
+                    breathCycle.textContent = (currentLang === 'en' ? 'Cycle ' : 'Цикл ') + sessionCycles;
+                    breathHint.textContent = currentLang === 'en' ? 'Tap to continue' : 'Нажми, чтобы продолжить';
                 }
             }
 
@@ -1418,9 +1534,8 @@
                 });
                 document.querySelector('[data-technique="' + technique + '"]').classList.add('active');
 
-                const tech = getTechnique();
-                instruction.innerHTML =
-                    '<span class="tech-title ' + tech.titleClass + '">' + tech.title + '</span>' + tech.instruction;
+                updateInstruction();
+                updateLangOnElements();
 
                 breathCircleContainer.classList.remove('idle');
                 breathCircleContainer.classList.add('idle-first');
@@ -1428,10 +1543,86 @@
                 breathCircle.style.boxShadow = 'none';
                 breathRing.style.background = 'transparent';
 
+                const tech = getTechnique();
                 breathTimer.textContent = tech.phases[0].duration;
-                breathPhase.textContent = tech.phases[0].name;
-                breathCycle.textContent = 'Цикл 0';
-                breathHint.textContent = 'Нажми, чтобы начать';
+                breathPhase.textContent = getPhaseName(tech.phases[0]);
+                breathCycle.textContent = (currentLang === 'en' ? 'Cycle ' : 'Цикл ') + '0';
+                breathHint.textContent = currentLang === 'en' ? 'Tap to start' : 'Нажми, чтобы начать';
+                const startHint = document.querySelector('.breath-start-hint');
+                if (startHint) {
+                    startHint.textContent = currentLang === 'en' ? 'Start practice' : 'Начать практику';
+                }
+            }
+
+            // ============================================================
+            // 3. ЛОКАЛИЗАЦИЯ
+            // ============================================================
+            function updateInstruction() {
+                const tech = getTechnique();
+                const title = currentLang === 'en' ? tech.titleEn : tech.title;
+                const instructionText = currentLang === 'en' ? tech.instructionEn : tech.instruction;
+                const desc = currentLang === 'en' ? tech.descEn : tech.desc;
+                instruction.innerHTML =
+                    '<span class="tech-title ' + tech.titleClass + '">' + title + '</span>' +
+                    instructionText + '<br>' + desc;
+            }
+
+            function updateLangOnElements() {
+                document.querySelectorAll('[data-ru][data-en]').forEach(function(el) {
+                    if (el.tagName === 'STRONG' || el.tagName === 'SPAN' || el.tagName === 'DIV') {
+                        el.textContent = el.getAttribute('data-' + currentLang);
+                    }
+                });
+
+                document.querySelectorAll('.technique-btn .tech-name').forEach(function(el) {
+                    const ru = el.getAttribute('data-ru');
+                    const en = el.getAttribute('data-en');
+                    if (ru && en) {
+                        el.textContent = currentLang === 'en' ? en : ru;
+                    }
+                });
+
+                const startHint = document.querySelector('.breath-start-hint');
+                if (startHint) {
+                    const ru = startHint.getAttribute('data-ru');
+                    const en = startHint.getAttribute('data-en');
+                    if (ru && en) {
+                        startHint.textContent = currentLang === 'en' ? en : ru;
+                    }
+                }
+
+                const hint = document.getElementById('breathHint');
+                if (hint && isFirstStart) {
+                    hint.textContent = currentLang === 'en' ? 'Tap to start' : 'Нажми, чтобы начать';
+                } else if (hint && !isPlaying && !isFirstStart) {
+                    hint.textContent = currentLang === 'en' ? 'Tap to continue' : 'Нажми, чтобы продолжить';
+                }
+
+                if (!isPlaying) {
+                    const phase = document.getElementById('breathPhase');
+                    if (phase) {
+                        phase.textContent = isFirstStart ? (currentLang === 'en' ? 'Inhale' : 'Вдох') : (currentLang === 'en' ? 'Pause' : 'Пауза');
+                    }
+                    const cycle = document.getElementById('breathCycle');
+                    if (cycle) {
+                        cycle.textContent = (currentLang === 'en' ? 'Cycle ' : 'Цикл ') + sessionCycles;
+                    }
+                }
+            }
+
+            function setLanguage(lang) {
+                currentLang = lang;
+                if (lang === 'en') {
+                    document.body.classList.add('lang-en');
+                } else {
+                    document.body.classList.remove('lang-en');
+                }
+                localStorage.setItem('breath-lang', lang);
+                updateInstruction();
+                updateLangOnElements();
+                if (isPlaying) {
+                    updateDisplay();
+                }
             }
 
             breathCircleContainer.addEventListener('click', toggleBreathing);
@@ -1450,12 +1641,13 @@
             });
 
             // ============================================================
-            // 3. САЙДБАР И ТЕМА
+            // 4. САЙДБАР, ТЕМА И ЯЗЫК
             // ============================================================
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const themeToggle = document.getElementById('themeToggle');
             const toggleIcon = document.getElementById('toggleIcon');
+            const langToggle = document.getElementById('langToggle');
 
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('open');
@@ -1469,12 +1661,18 @@
                 }
             });
 
+            // ----- Тема -----
             function applyTheme(theme) {
                 var isLight = theme === 'light';
                 document.body.classList.toggle('light-theme', isLight);
                 toggleIcon.textContent = isLight ? '☀️' : '🌙';
-                var bgGradient = getComputedStyle(document.documentElement).getPropertyValue('--bg-gradient').trim();
-                document.documentElement.style.background = bgGradient;
+
+                if (isLight) {
+                    document.documentElement.style.background = 'radial-gradient(circle at 50% 40%, #e8e8e8 0%, #f5f5f5 100%)';
+                } else {
+                    document.documentElement.style.background = 'radial-gradient(circle at 50% 40%, #121212 0%, #050505 100%)';
+                }
+
                 localStorage.setItem('breath-theme', theme);
             }
 
@@ -1486,12 +1684,29 @@
                 applyTheme(isLight ? 'dark' : 'light');
             });
 
+            // ----- Язык -----
+            var savedLang = localStorage.getItem('breath-lang') || 'ru';
+            if (savedLang === 'en') {
+                document.body.classList.add('lang-en');
+            }
+            currentLang = savedLang;
+
+            langToggle.addEventListener('click', function() {
+                var newLang = currentLang === 'ru' ? 'en' : 'ru';
+                setLanguage(newLang);
+            });
+
             // ---- Инициализация ----
             var initTech = TECHNIQUES.relax;
             instruction.innerHTML =
-                '<span class="tech-title ' + initTech.titleClass + '">' + initTech.title + '</span>' + initTech.instruction;
+                '<span class="tech-title ' + initTech.titleClass + '">' + initTech.title + '</span>' +
+                initTech.instruction + '<br>' + initTech.desc;
             breathTimer.textContent = initTech.phases[0].duration;
             breathPhase.textContent = initTech.phases[0].name;
+
+            if (savedLang === 'en') {
+                setLanguage('en');
+            }
 
         })();
     </script>
